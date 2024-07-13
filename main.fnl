@@ -1,6 +1,6 @@
 (local os (require :os))
-
-(local default-height 30)
+(local config (require "config.fnl"))
+(local window (require "window.fnl"))
 
 (fn love.load []
   ;; start a thread listening on stdin
@@ -13,19 +13,31 @@ while 1 do love.event.push('stdin', io.read('*line')) end") :start))
     (let [(ok val) (pcall fennel.eval line)]
       (print (if ok (fennel.view val) val)))))
 
+(var min-dt nil)
+(var next-time nil)
+
 (fn love.load []
-  (let [width (love.window.getDesktopDimensions)]
-    (love.window.setMode width default-height {:resizable false :fullscreen false :vsync true})
-    (love.window.setPosition 0 0)))
+  (set min-dt config.frame-rate)
+  (set next-time (love.timer.getTime))
+  (love.graphics.setFont (love.graphics.newFont config.font config.font-size))
+  (window.place-window config.window))
 
 (fn love.draw []
-  (let [bg [0.11764705882352941 0.11764705882352941 0.1803921568627451 1]
-        fg [1 1 1 1]
+  (let [bg config.background-color
+        fg config.foreground-color
         time (os.date "%H:%M:%S")
         width (love.window.getDesktopDimensions)]
     (love.graphics.clear bg)
     (love.graphics.setColor fg)
-    (love.graphics.print time (- width 70) (/ default-height 4))))
+    (love.graphics.print time (- width 100) 2))
+  
+  (let [cur-time (love.timer.getTime)]
+    (if (> next-time cur-time)
+      (love.timer.sleep (- cur-time next-time))
+      (set next-time cur-time))))
 
 (fn love.keypressed [_key]
   (love.event.quit))
+
+(fn love.update [_dt]
+  (set next-time (+ next-time min-dt)))
