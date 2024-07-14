@@ -21,6 +21,7 @@
     (love.window.setPosition x y)
     {:width width
      :height height
+     :renderable-width width
      :x x
      :y y}))
 
