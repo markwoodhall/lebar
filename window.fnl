@@ -18,7 +18,11 @@
       {:resizable false 
        :fullscreen false 
        :vsync false})
-    (love.window.setPosition x y)))
+    (love.window.setPosition x y)
+    {:width width
+     :height height
+     :x x
+     :y y}))
 
 (set window.place-window 
      (fn [config]

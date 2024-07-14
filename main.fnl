@@ -15,21 +15,22 @@ while 1 do love.event.push('stdin', io.read('*line')) end") :start))
 
 (var min-dt nil)
 (var next-time nil)
+(var bar {})
 
 (fn love.load []
   (set min-dt config.frame-rate)
   (set next-time (love.timer.getTime))
   (love.graphics.setFont (love.graphics.newFont config.font config.font-size))
-  (window.place-window config.window))
+  (set bar (window.place-window config.window)))
 
 (fn love.draw []
   (let [bg config.background-color
         fg config.foreground-color
-        time (os.date "%H:%M:%S")
         width (love.window.getDesktopDimensions)]
     (love.graphics.clear bg)
     (love.graphics.setColor fg)
-    (love.graphics.print time (- width 100) 2))
+    (each [_ value (pairs config.blocks)]
+      (value bar)))
   
   (let [cur-time (love.timer.getTime)]
     (if (> next-time cur-time)
