@@ -8,8 +8,10 @@
 (set config.block.defaults.margin 2)
 (set config.block.defaults.margin-x 8)
 (set config.block.defaults.width 140)
+(set config.block.defaults.height 24)
 (set config.block.defaults.auto-fit true)
-
+(set config.block.defaults.background-color 
+     [0.11764705882352941 0.11764705882352941 0.1803921568627451 1])
 (set config.block.defaults.foreground-color
      [0.6470588235294118 0.6784313725490196 0.796078431372549 1])
 
@@ -17,34 +19,42 @@
 (set config.block.separator {})
 (set config.block.separator.margin config.block.defaults.margin)
 (set config.block.separator.margin-x config.block.defaults.margin-x)
-(set config.block.separator.width 28)
+(set config.block.separator.width config.block.defaults.width)
+(set config.block.separator.height config.block.defaults.height)
 (set config.block.separator.text "|")
 (set config.block.separator.foreground-color config.block.defaults.foreground-color)
+(set config.block.separator.background-color config.block.defaults.background-color)
 (set config.block.separator.auto-fit config.block.defaults.auto-fit)
 
 ; configuration for the time block
 (set config.block.time {})
 (set config.block.time.margin config.block.defaults.margin)
 (set config.block.time.margin-x config.block.defaults.margin-x)
-(set config.block.time.width 100)
+(set config.block.time.width config.block.defaults.width)
+(set config.block.time.height config.block.defaults.height)
 (set config.block.time.format "%H:%M")
 (set config.block.time.foreground-color [0.6196078431372549 0.1607843137254902 0.1607843137254902])
+(set config.block.time.background-color [128 128 128])
 (set config.block.time.auto-fit config.block.defaults.auto-fit)
 
 ; configuration for the power block
 (set config.block.power {})
 (set config.block.power.width config.block.defaults.width)
+(set config.block.power.height config.block.defaults.height)
 (set config.block.power.margin config.block.defaults.margin)
 (set config.block.power.margin-x config.block.defaults.margin-x)
 (set config.block.power.foreground-color config.block.defaults.foreground-color)
+(set config.block.power.background-color config.block.defaults.background-color)
 (set config.block.power.auto-fit config.block.defaults.auto-fit)
 
 ; configuration for the shell block
 (set config.block.shell {})
 (set config.block.shell.width config.block.defaults.width)
+(set config.block.shell.height config.block.defaults.height)
 (set config.block.shell.margin config.block.defaults.margin)
 (set config.block.shell.margin-x config.block.defaults.margin-x)
 (set config.block.shell.foreground-color config.block.defaults.foreground-color)
+(set config.block.shell.background-color config.block.defaults.background-color)
 (set config.block.shell.auto-fit config.block.defaults.auto-fit)
 
 (fn text-to-width [text margin]
@@ -54,11 +64,13 @@
     (+ width margin)))
 
 (fn bar-print [bar content width direction block-config]
-  (love.graphics.setColor block-config.foreground-color)
   (let [renderable-width-right (. bar :renderable-width-right)
         renderable-width-left (. bar :renderable-width-left)]
     (case direction
       :right (do 
+               (love.graphics.setColor block-config.background-color)
+               (love.graphics.rectangle "fill" (- renderable-width-right width) block-config.margin width block-config.height)
+               (love.graphics.setColor block-config.foreground-color)
                (love.graphics.print 
                  content
                  (- renderable-width-right width) 

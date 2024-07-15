@@ -11,7 +11,7 @@
 (set config.frame-rate 0.000001)
 
 (set config.font "JetBrainsMonoNerdFont-Regular.ttf")
-(set config.font-size 18)
+(set config.font-size 16)
 
 (set config.window {})
 (set config.window.position :top)
