@@ -29,17 +29,19 @@ while 1 do love.event.push('stdin', io.read('*line')) end") :start))
     (love.graphics.clear bg)
     (love.graphics.setColor fg)
     (let [l-bar bar]
-      (set l-bar.renderable-width (. l-bar :width))
-      (each [_ value (pairs config.blocks)]
-        (set bar (value l-bar)))))
+      (set l-bar.renderable-width-right (. l-bar :width))
+      (set l-bar.renderable-width-left config.window.margin)
+      (each [_ value (pairs (. config.blocks :left))]
+        (set bar (value l-bar :left)))
+      (each [_ value (pairs (. config.blocks :right))]
+        (set bar (value l-bar :right)))))
   
   (let [cur-time (love.timer.getTime)]
     (if (> next-time cur-time)
       (love.timer.sleep (- cur-time next-time))
       (set next-time cur-time))))
 
-(fn love.keypressed [_key]
-  (love.event.quit))
+(fn love.keypressed [_key])
 
 (fn love.update [_dt]
   (set next-time (+ next-time min-dt)))

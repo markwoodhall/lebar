@@ -17,20 +17,27 @@
       height 
       {:resizable false 
        :fullscreen false 
+       :minwidth width
+       :minheight height
+       :centered false
+       :borderless true
        :vsync false})
     (love.window.setPosition x y)
     {:width width
      :height height
-     :renderable-width width
+     :renderable-width-right width
+     :renderable-width-left width
      :x x
      :y y}))
 
 (set window.place-window 
      (fn [config]
        "Places the love window (bar) based on the config"
+       (local (width _) (love.window.getDesktopDimensions))
+       (love.window.setTitle "LEBAR_WM_TB")
        (case config.position
          :top (w-top 
-                (love.window.getDesktopDimensions)
+                width
                 config.height
                 config.margin))))
 

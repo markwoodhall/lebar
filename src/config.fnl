@@ -8,7 +8,7 @@
 (set config.foreground-color
      [0.6470588235294118 0.6784313725490196 0.796078431372549 1])
 
-(set config.frame-rate 30)
+(set config.frame-rate 0.000001)
 
 (set config.font "JetBrainsMonoNerdFont-Regular.ttf")
 (set config.font-size 18)
@@ -19,8 +19,21 @@
 (set config.window.height 28)
 
 (set config.blocks 
-     [blocks.time 
-      blocks.separator
-      blocks.power])
+     {:left 
+      [blocks.window-title 
+       blocks.separator
+       blocks.i3-workspace
+       blocks.separator
+       blocks.i3-binding-state]
+      :right 
+      [blocks.time 
+       blocks.separator
+       blocks.power
+       blocks.separator
+       blocks.memory
+       blocks.separator
+       blocks.cpu
+       blocks.separator
+       blocks.free-disk-space]})
 
 config

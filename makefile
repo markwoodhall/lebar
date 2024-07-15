@@ -13,8 +13,10 @@ SCRIPT_FILE = $(BUILD_DIR)/lebar
 # LÖVE executable (adjust the path if needed)
 LOVE_EXECUTABLE = ./love
 
+LEBARDOCK = lebardock
+
 # Default target
-all: $(LOVE_FILE) $(LOVE_EXECUTABLE) $(SCRIPT_FILE)
+all: $(LOVE_FILE) $(LOVE_EXECUTABLE) $(SCRIPT_FILE) $(LEBARDOCK)
 
 # Create the .love file
 $(LOVE_FILE):
@@ -26,6 +28,11 @@ $(LOVE_FILE):
 $(LOVE_EXECUTABLE): $(LOVE_FILE)
 	@echo "Copying LÖVE executable..."
 	@cp  /usr/bin/love $(BUILD_DIR)
+
+# Copy lebardock
+$(LEBARDOCK): $(LOVE_FILE)
+	@echo "Copying lebardock..."
+	@cp $(LEBARDOCK) $(BUILD_DIR)/$(LEBARDOCK)
 
 # Create the shell script
 $(SCRIPT_FILE): $(LOVE_FILE)
