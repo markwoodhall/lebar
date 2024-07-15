@@ -29,7 +29,7 @@ while 1 do love.event.push('stdin', io.read('*line')) end") :start))
     (love.graphics.clear bg)
     (love.graphics.setColor fg)
     (let [l-bar bar]
-      (set l-bar.renderable-width-right (. l-bar :width))
+      (set l-bar.renderable-width-right (- (. l-bar :width) config.window.margin))
       (set l-bar.renderable-width-left config.window.margin)
       (each [_ value (pairs (. config.blocks :left))]
         (set bar (value l-bar :left)))
