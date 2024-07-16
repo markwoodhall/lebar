@@ -195,7 +195,9 @@
              block-config config.block.power]
          (when (= state "battery")
           (set block-config.foreground-color config.theme.red))
-         (bar-print bar content width height direction block-config))))
+         (if (not= state "nobattery")
+           (bar-print bar content width height direction block-config)
+           bar))))
 
 (fn shell-command [command]
   (let [handle (io.popen command)
