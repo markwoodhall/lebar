@@ -20,9 +20,11 @@
 
 (set config.blocks 
      {:left 
-      [blocks.window-title 
+      [blocks.i3-workspace
        blocks.separator
-       blocks.i3-workspace
+       blocks.i3-workspaces
+       blocks.separator
+       blocks.window-title 
        blocks.separator
        blocks.i3-binding-state]
       :right 

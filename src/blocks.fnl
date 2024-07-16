@@ -18,6 +18,8 @@
 (set config.block.defaults.width 140)
 (set config.block.defaults.height 20)
 (set config.block.defaults.auto-fit true)
+(set config.block.defaults.font "JetBrainsMonoNerdFont-Regular.ttf")
+(set config.block.defaults.font-size 16)
 (set config.block.defaults.background-color config.theme.black)
 (set config.block.defaults.foreground-color config.theme.text)
 
@@ -27,6 +29,8 @@
 (set config.block.separator.margin-x config.block.defaults.margin-x)
 (set config.block.separator.width config.block.defaults.width)
 (set config.block.separator.height config.block.defaults.height)
+(set config.block.separator.font config.block.defaults.font)
+(set config.block.separator.font-size config.block.defaults.font-size)
 (set config.block.separator.text " ")
 (set config.block.separator.foreground-color config.block.defaults.foreground-color)
 (set config.block.separator.background-color config.block.defaults.background-color)
@@ -39,6 +43,8 @@
 (set config.block.time.width config.block.defaults.width)
 (set config.block.time.height config.block.defaults.height)
 (set config.block.time.format "%H:%M")
+(set config.block.time.font config.block.defaults.font)
+(set config.block.time.font-size config.block.defaults.font-size)
 (set config.block.time.foreground-color config.theme.text)
 (set config.block.time.background-color config.theme.black)
 (set config.block.time.auto-fit config.block.defaults.auto-fit)
@@ -49,6 +55,8 @@
 (set config.block.power.height config.block.defaults.height)
 (set config.block.power.margin config.block.defaults.margin)
 (set config.block.power.margin-x config.block.defaults.margin-x)
+(set config.block.power.font config.block.defaults.font)
+(set config.block.power.font-size config.block.defaults.font-size)
 (set config.block.power.foreground-color config.theme.text)
 (set config.block.power.background-color config.theme.black)
 (set config.block.power.auto-fit config.block.defaults.auto-fit)
@@ -59,6 +67,8 @@
 (set config.block.shell.height config.block.defaults.height)
 (set config.block.shell.margin config.block.defaults.margin)
 (set config.block.shell.margin-x config.block.defaults.margin-x)
+(set config.block.shell.font config.block.defaults.font)
+(set config.block.shell.font-size config.block.defaults.font-size)
 (set config.block.shell.foreground-color config.block.defaults.foreground-color)
 (set config.block.shell.background-color config.block.defaults.background-color)
 (set config.block.shell.auto-fit config.block.defaults.auto-fit)
@@ -69,6 +79,8 @@
 (set config.block.memory.height config.block.defaults.height)
 (set config.block.memory.margin config.block.defaults.margin)
 (set config.block.memory.margin-x config.block.defaults.margin-x)
+(set config.block.memory.font config.block.defaults.font)
+(set config.block.memory.font-size config.block.defaults.font-size)
 (set config.block.memory.foreground-color config.block.defaults.foreground-color)
 (set config.block.memory.background-color config.block.defaults.background-color)
 (set config.block.memory.auto-fit config.block.defaults.auto-fit)
@@ -79,9 +91,12 @@
 (set config.block.cpu.height config.block.defaults.height)
 (set config.block.cpu.margin config.block.defaults.margin)
 (set config.block.cpu.margin-x config.block.defaults.margin-x)
+(set config.block.cpu.font config.block.defaults.font)
+(set config.block.cpu.font-size config.block.defaults.font-size)
 (set config.block.cpu.foreground-color config.block.defaults.foreground-color)
 (set config.block.cpu.background-color config.block.defaults.background-color)
 (set config.block.cpu.auto-fit config.block.defaults.auto-fit)
+(set config.block.cpu.ok-threshold 50)
 
 ; configuration for the window-title block
 (set config.block.window-title {})
@@ -89,6 +104,8 @@
 (set config.block.window-title.height config.block.defaults.height)
 (set config.block.window-title.margin config.block.defaults.margin)
 (set config.block.window-title.margin-x config.block.defaults.margin-x)
+(set config.block.window-title.font "JetBrainsMonoNerdFont-Italic.ttf")
+(set config.block.window-title.font-size config.block.defaults.font-size)
 (set config.block.window-title.foreground-color config.theme.text)
 (set config.block.window-title.background-color config.theme.black)
 (set config.block.window-title.auto-fit config.block.defaults.auto-fit)
@@ -99,9 +116,23 @@
 (set config.block.i3-workspace.height config.block.defaults.height)
 (set config.block.i3-workspace.margin config.block.defaults.margin)
 (set config.block.i3-workspace.margin-x config.block.defaults.margin-x)
+(set config.block.i3-workspace.font config.block.defaults.font)
+(set config.block.i3-workspace.font-size config.block.defaults.font-size)
 (set config.block.i3-workspace.foreground-color config.block.defaults.foreground-color)
 (set config.block.i3-workspace.background-color config.block.defaults.background-color)
 (set config.block.i3-workspace.auto-fit config.block.defaults.auto-fit)
+
+; configuration for the i3-workspaces block
+(set config.block.i3-workspaces {})
+(set config.block.i3-workspaces.width config.block.defaults.width)
+(set config.block.i3-workspaces.height config.block.defaults.height)
+(set config.block.i3-workspaces.margin config.block.defaults.margin)
+(set config.block.i3-workspaces.margin-x config.block.defaults.margin-x)
+(set config.block.i3-workspaces.font config.block.defaults.font)
+(set config.block.i3-workspaces.font-size config.block.defaults.font-size)
+(set config.block.i3-workspaces.foreground-color config.block.defaults.foreground-color)
+(set config.block.i3-workspaces.background-color config.block.defaults.background-color)
+(set config.block.i3-workspaces.auto-fit config.block.defaults.auto-fit)
 
 ; configuration for the free-disk-space block
 (set config.block.free-disk-space {})
@@ -109,6 +140,8 @@
 (set config.block.free-disk-space.height config.block.defaults.height)
 (set config.block.free-disk-space.margin config.block.defaults.margin)
 (set config.block.free-disk-space.margin-x config.block.defaults.margin-x)
+(set config.block.free-disk-space.font config.block.defaults.font)
+(set config.block.free-disk-space.font-size config.block.defaults.font-size)
 (set config.block.free-disk-space.foreground-color config.block.defaults.foreground-color)
 (set config.block.free-disk-space.background-color config.block.defaults.background-color)
 (set config.block.free-disk-space.auto-fit config.block.defaults.auto-fit)
@@ -119,6 +152,8 @@
 (set config.block.i3-binding-state.height config.block.defaults.height)
 (set config.block.i3-binding-state.margin config.block.defaults.margin)
 (set config.block.i3-binding-state.margin-x config.block.defaults.margin-x)
+(set config.block.i3-binding-state.font config.block.defaults.font)
+(set config.block.i3-binding-state.font-size config.block.defaults.font-size)
 (set config.block.i3-binding-state.foreground-color config.block.defaults.foreground-color)
 (set config.block.i3-binding-state.background-color config.block.defaults.background-color)
 (set config.block.i3-binding-state.auto-fit config.block.defaults.auto-fit)
@@ -138,6 +173,7 @@
 (fn bar-print [bar content width height direction block-config]
   (let [renderable-width-right (. bar :renderable-width-right)
         renderable-width-left (. bar :renderable-width-left)]
+    (love.graphics.setFont (love.graphics.newFont block-config.font block-config.font-size))
     (case direction
       :right (do 
                (love.graphics.setColor block-config.background-color)
@@ -157,6 +193,8 @@
                 (+ block-config.margin-x renderable-width-left)
                 block-config.margin)
               (set bar.renderable-width-left (+ renderable-width-left width))))
+
+    (love.graphics.setFont (love.graphics.newFont config.block.defaults.font 20))
     bar))
 
 (set blocks.separator
@@ -186,6 +224,9 @@
      (fn [bar direction]
        (local (state percent) (love.system.getPowerInfo))
        (let [content (.. state (if percent (.. " " percent "%") ""))
+             content (if (= content "nobattery")
+                       "AC"
+                       content)
              width (if config.block.power.auto-fit
                      (text-to-width content config.block.power.margin-x)
                      config.block.power.width)
@@ -195,19 +236,60 @@
              block-config config.block.power]
          (when (= state "battery")
           (set block-config.foreground-color config.theme.red))
-         (if (not= state "nobattery")
-           (bar-print bar content width height direction block-config)
-           bar))))
+         (bar-print bar content width height direction block-config))))
 
 (fn shell-command [command]
   (let [handle (io.popen command)
         result (handle:read "*l")]
     (handle:close)
     (if result
-    (-> result
-        (string.gsub "\"" "")
-        (string.gsub "^%s*(.-)%s*$" "%1"))
+      (-> result
+          (string.gsub "\"" "")
+          (string.gsub "^%s*(.-)%s*$" "%1"))
       "")))
+
+(set blocks.cpu
+     (fn [bar direction]
+       (let [block-config config.block.cpu 
+             cpu-percentage (shell-command "mpstat 1 2 | awk 'END{print 100-$NF}'")
+             content (.. "CPU " (if cpu-percentage cpu-percentage "") "%")
+             width (if block-config.auto-fit
+                     (text-to-width content block-config.margin-x)
+                     block-config.width)
+             height (if block-config.auto-fit
+                      (text-to-height content block-config.margin)
+                      block-config.height)]
+         (if (and cpu-percentage (> (tonumber cpu-percentage) block-config.ok-threshold))
+           (set block-config.foreground-color config.theme.red)
+           (set block-config.foreground-color config.theme.green))
+         (bar-print bar content width height direction block-config))))
+
+(set blocks.i3-workspace
+     (fn [bar direction]
+       (let [block-config config.block.i3-workspace 
+             i3-ws (shell-command "i3-msg -s $(i3 --get-socketpath) -t get_workspaces | jq -r '.[] | select(.focused==true) | .name'")
+             content i3-ws
+             width (if block-config.auto-fit
+                     (text-to-width content block-config.margin-x)
+                     block-config.width)
+             height (if block-config.auto-fit
+                     (text-to-height content block-config.margin)
+                     block-config.height)] 
+       (set block-config.foreground-color config.theme.green)
+       (bar-print bar content width height direction block-config))))
+
+(set blocks.i3-workspaces
+     (fn [bar direction]
+       (let [block-config config.block.i3-workspaces
+             i3-ws (shell-command "i3-msg -s $(i3 --get-socketpath) -t get_workspaces | jq -r '.[] | select(.focused==false) | .name' | paste -sd \"-\" -")
+             content i3-ws
+             width (if block-config.auto-fit
+                     (text-to-width content block-config.margin-x)
+                     block-config.width)
+             height (if block-config.auto-fit
+                      (text-to-height content block-config.margin)
+                      block-config.height)]
+       (bar-print bar content width height direction block-config))))
 
 (set blocks.shell
      (fn [block-config cmd bar direction]
@@ -226,23 +308,11 @@
        config.block.memory 
        "free | awk '/^Mem/ { printf(\"RAM %.0f%\", $3/$2 * 100.0) }'"))
 
-(set blocks.cpu
-     (partial 
-       blocks.shell 
-       config.block.cpu 
-       "cat /proc/stat |  awk '/^cpu / { printf(\"CPU %.0f%\", ($2+$4)*100/($2+$4+$5)) }'"))
-
 (set blocks.window-title
      (partial 
        blocks.shell 
        config.block.window-title
        "xprop -id $(xprop -root -f _NET_ACTIVE_WINDOW 0x \" \\$0\\\\n\" _NET_ACTIVE_WINDOW | awk \"{print \\$2}\") WM_NAME | cut -f2 -d '='"))
-
-(set blocks.i3-workspace
-     (partial 
-       blocks.shell 
-       config.block.i3-workspace
-       "i3-msg -s $(i3 --get-socketpath) -t get_workspaces | jq -r '.[] | select(.focused==true) | .name'"))
 
 (set blocks.free-disk-space
      (partial 

@@ -1,6 +1,7 @@
 (local os (require :os))
 (local config (require "config.fnl"))
 (local window (require "window.fnl"))
+(local renderer (require "renderer.fnl"))
 
 (fn love.load []
   ;; start a thread listening on stdin
@@ -28,18 +29,16 @@ while 1 do love.event.push('stdin', io.read('*line')) end") :start))
         fg config.foreground-color]
     (love.graphics.clear bg)
     (love.graphics.setColor fg)
-    (let [l-bar bar]
-      (set l-bar.renderable-width-right (- (. l-bar :width) config.window.margin))
-      (set l-bar.renderable-width-left config.window.margin)
-      (each [_ value (pairs (. config.blocks :left))]
-        (set bar (value l-bar :left)))
-      (each [_ value (pairs (. config.blocks :right))]
-        (set bar (value l-bar :right)))))
+
+
+    (set bar (renderer.render-bar bar)))
   
   (let [cur-time (love.timer.getTime)]
     (if (> next-time cur-time)
       (love.timer.sleep (- cur-time next-time))
-      (set next-time cur-time))))
+      (set next-time cur-time)))
+  
+  (collectgarbage "collect"))
 
 (fn love.keypressed [_key])
 
