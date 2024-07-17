@@ -42,7 +42,7 @@
 (set config.block.time.margin-x config.block.defaults.margin-x)
 (set config.block.time.width config.block.defaults.width)
 (set config.block.time.height config.block.defaults.height)
-(set config.block.time.format "%H:%M:%S")
+(set config.block.time.format "%a %d, %H:%M")
 (set config.block.time.font config.block.defaults.font)
 (set config.block.time.font-size config.block.defaults.font-size)
 (set config.block.time.foreground-color config.theme.text)
@@ -97,7 +97,6 @@
 (set config.block.cpu.background-color config.block.defaults.background-color)
 (set config.block.cpu.auto-fit config.block.defaults.auto-fit)
 (set config.block.cpu.ok-threshold 50)
-(set config.block.cpu.last-cpu 0)
 
 ; configuration for the window-title block
 (set config.block.window-title {})
@@ -165,11 +164,11 @@
         width (font:getWidth text)]
     (+ width margin margin)))
 
-(fn text-to-height [text _margin]
+(fn text-to-height [text margin]
   "Given some text to be rendered, try to calculate an appropriate height for the block"
   (let [font (love.graphics.getFont)
         height (font:getHeight text)]
-    height))
+    (- height margin)))
 
 (fn bar-print [bar content width height direction block-config]
   (let [renderable-width-right (. bar :renderable-width-right)
@@ -221,23 +220,63 @@
                      config.block.time.height)]
          (bar-print bar content width height direction config.block.time))))
 
+
+(var blocks-state-memory-last "")
+(set blocks.memory
+     {:load
+      (fn [bar _direction]
+        (local memory (love.filesystem.read "memory.fnl"))
+        (local luas (fennel.compile-string memory))
+        (blocks.thread-shell-command luas)
+        bar)
+      :draw 
+      (fn [bar direction]
+        (let [block-config config.block.memory 
+              channel (love.thread.getChannel "memory")
+              memory (: channel :pop)
+              content (or memory blocks-state-memory-last)
+              width (if block-config.auto-fit
+                      (text-to-width content block-config.margin-x)
+                      block-config.width)
+              height (if block-config.auto-fit
+                       (text-to-height content block-config.margin)
+                       block-config.height)]
+          (when memory
+            (set blocks-state-memory-last memory))
+          (bar-print bar content width height direction block-config)))})
+
+
+(var blocks-state-power {})
 (set blocks.power
-     (fn [bar direction]
-       (local (state percent) (love.system.getPowerInfo))
-       (let [content (.. state (if percent (.. " " percent "%") ""))
-             content (if (= content "nobattery")
-                       "AC"
-                       content)
-             width (if config.block.power.auto-fit
-                     (text-to-width content config.block.power.margin-x)
-                     config.block.power.width)
-             height (if config.block.power.auto-fit
-                     (text-to-height content config.block.power.margin)
-                     config.block.power.height)
-             block-config config.block.power]
-         (when (= state "battery")
-          (set block-config.foreground-color config.theme.red))
-         (bar-print bar content width height direction block-config))))
+     {:load
+      (fn [bar _direction]
+        (local power (love.filesystem.read "power.fnl"))
+        (local luas (fennel.compile-string power))
+        (blocks.thread-shell-command luas)
+        bar)
+      :draw 
+      (fn [bar direction]
+        (let [channel (love.thread.getChannel "power")]
+          (if (: channel :peek)
+            (let [power (: channel :pop)
+                  [state percent] (if power power ["nobattery" nil])
+                  content (.. state (if percent (.. " " percent "%") ""))
+                  content (if (= content "nobattery")
+                            "AC"
+                            content)
+                  width (if config.block.power.auto-fit
+                          (text-to-width content config.block.power.margin-x)
+                          config.block.power.width)
+                  height (if config.block.power.auto-fit
+                           (text-to-height content config.block.power.margin)
+                           config.block.power.height)
+                  block-config config.block.power]
+              (when (= state "battery")
+                (set block-config.foreground-color config.theme.red))
+              (when power
+                (set blocks-state-power {:power power :content content :width width :height height}))
+              (bar-print bar content width height direction block-config))
+            (bar-print bar blocks-state-power.content blocks-state-power.width blocks-state-power.height direction config.block.power))))})
 
 (fn shell-command [command]
   (let [handle (io.popen command)
@@ -256,8 +295,31 @@
 
 (set blocks.thread-shell-command thread-shell-command)
 
-(var blocks-state-cpu-last 0)
+(var blocks-state-memory-last "")
+(set blocks.memory
+     {:load
+      (fn [bar _direction]
+        (local memory (love.filesystem.read "memory.fnl"))
+        (local luas (fennel.compile-string memory))
+        (blocks.thread-shell-command luas)
+        bar)
+      :draw 
+      (fn [bar direction]
+        (let [block-config config.block.memory 
+              channel (love.thread.getChannel "memory")
+              memory (: channel :pop)
+              content (or memory blocks-state-memory-last)
+              width (if block-config.auto-fit
+                      (text-to-width content block-config.margin-x)
+                      block-config.width)
+              height (if block-config.auto-fit
+                       (text-to-height content block-config.margin)
+                       block-config.height)]
+          (when memory
+            (set blocks-state-memory-last memory))
+          (bar-print bar content width height direction block-config)))})
 
+(var blocks-state-cpu-last 0)
 (set blocks.cpu
      {:load
       (fn [bar _direction]
@@ -279,8 +341,12 @@
                        block-config.height)]
           (when (and cpu-percentage (tonumber cpu-percentage))
             (if (> (tonumber cpu-percentage) block-config.ok-threshold)
-              (set block-config.foreground-color config.theme.red)
-              (set block-config.foreground-color config.theme.green)))
+              (do 
+                (set block-config.background-color config.theme.red)
+                (set block-config.foreground-color config.theme.black))
+              (do 
+                (set block-config.background-color config.theme.green)
+                (set block-config.foreground-color config.theme.black))))
           (when (tonumber cpu-percentage)
             (set blocks-state-cpu-last (tonumber cpu-percentage)))
           (bar-print bar content width height direction block-config)))})
@@ -322,12 +388,6 @@
                      (text-to-height content block-config.margin)
                      block-config.height)]
          (bar-print bar content width height direction block-config))))
-
-(set blocks.memory 
-     (partial 
-       blocks.shell 
-       config.block.memory 
-       "free | awk '/^Mem/ { printf(\"RAM %.0f%\", $3/$2 * 100.0) }'"))
 
 (set blocks.window-title
      (partial 

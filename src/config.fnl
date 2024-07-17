@@ -8,7 +8,7 @@
 (set config.foreground-color
      [0.6470588235294118 0.6784313725490196 0.796078431372549 1])
 
-(set config.frame-rate 0.000001)
+(set config.refresh-seconds 0.5)
 
 (set config.font "JetBrainsMonoNerdFont-Regular.ttf")
 (set config.font-size 16)
