@@ -18,7 +18,7 @@
 (set renderer.render-bar
      (fn [bar] 
        (var l-bar bar)
-       (set l-bar.renderable-width-right (- (. l-bar :width) config.window.margin))
+       (set l-bar.renderable-width-right (- (. l-bar :width) config.window.margin config.window.margin))
        (set l-bar.renderable-width-left config.window.margin)
        (each [_ value (pairs (. config.blocks :left))]
          (if (= (type value) "function")

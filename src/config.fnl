@@ -8,14 +8,14 @@
 (set config.foreground-color
      [0.6470588235294118 0.6784313725490196 0.796078431372549 1])
 
-(set config.refresh-seconds 0.5)
+(set config.refresh-seconds 0.1)
 
 (set config.font "JetBrainsMonoNerdFont-Regular.ttf")
 (set config.font-size 16)
 
 (set config.window {})
 (set config.window.position :top)
-(set config.window.margin 6)
+(set config.window.margin 4)
 (set config.window.height 30)
 
 (set config.blocks 
