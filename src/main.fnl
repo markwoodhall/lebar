@@ -3,11 +3,6 @@
 (local window (require "window.fnl"))
 (local renderer (require "renderer.fnl"))
 
-(fn love.load []
-  ;; start a thread listening on stdin
-  (: (love.thread.newThread "require('love.event')
-while 1 do love.event.push('stdin', io.read('*line')) end") :start))
-
 (fn love.handlers.stdin [line]
   ;; evaluate lines read from stdin as fennel code
   (if (= line "quit") (os.exit)
@@ -22,15 +17,14 @@ while 1 do love.event.push('stdin', io.read('*line')) end") :start))
   (set min-dt config.frame-rate)
   (set next-time (love.timer.getTime))
   (love.graphics.setFont (love.graphics.newFont config.font config.font-size))
-  (set bar (window.place-window config.window)))
+  (set bar (window.place-window config.window))
+  (set bar (renderer.load-bar bar)))
 
 (fn love.draw []
   (let [bg config.background-color
         fg config.foreground-color]
     (love.graphics.clear bg)
     (love.graphics.setColor fg)
-
-
     (set bar (renderer.render-bar bar)))
   
   (let [cur-time (love.timer.getTime)]
@@ -44,3 +38,7 @@ while 1 do love.event.push('stdin', io.read('*line')) end") :start))
 
 (fn love.update [_dt]
   (set next-time (+ next-time min-dt)))
+
+(fn love.threaderror [thread errorstr]
+  (print "Thread error!\n" errorstr)
+  (print (thread:getError)))

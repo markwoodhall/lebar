@@ -42,7 +42,7 @@
 (set config.block.time.margin-x config.block.defaults.margin-x)
 (set config.block.time.width config.block.defaults.width)
 (set config.block.time.height config.block.defaults.height)
-(set config.block.time.format "%H:%M")
+(set config.block.time.format "%H:%M:%S")
 (set config.block.time.font config.block.defaults.font)
 (set config.block.time.font-size config.block.defaults.font-size)
 (set config.block.time.foreground-color config.theme.text)
@@ -97,6 +97,7 @@
 (set config.block.cpu.background-color config.block.defaults.background-color)
 (set config.block.cpu.auto-fit config.block.defaults.auto-fit)
 (set config.block.cpu.ok-threshold 50)
+(set config.block.cpu.last-cpu 0)
 
 ; configuration for the window-title block
 (set config.block.window-title {})
@@ -248,21 +249,41 @@
           (string.gsub "^%s*(.-)%s*$" "%1"))
       "")))
 
+(set blocks.shell-command shell-command)
+
+(fn thread-shell-command [command]
+  (: (love.thread.newThread (tostring command)) :start))
+
+(set blocks.thread-shell-command thread-shell-command)
+
+(var blocks-state-cpu-last 0)
+
 (set blocks.cpu
-     (fn [bar direction]
-       (let [block-config config.block.cpu 
-             cpu-percentage (shell-command "mpstat 1 2 | awk 'END{print 100-$NF}'")
-             content (.. "CPU " (if cpu-percentage cpu-percentage "") "%")
-             width (if block-config.auto-fit
-                     (text-to-width content block-config.margin-x)
-                     block-config.width)
-             height (if block-config.auto-fit
-                      (text-to-height content block-config.margin)
-                      block-config.height)]
-         (if (and cpu-percentage (> (tonumber cpu-percentage) block-config.ok-threshold))
-           (set block-config.foreground-color config.theme.red)
-           (set block-config.foreground-color config.theme.green))
-         (bar-print bar content width height direction block-config))))
+     {:load
+      (fn [bar _direction]
+        (local cpu (love.filesystem.read "cpu.fnl"))
+        (local luas (fennel.compile-string cpu))
+        (blocks.thread-shell-command luas)
+        bar)
+      :draw 
+      (fn [bar direction]
+        (let [block-config config.block.cpu 
+              channel (love.thread.getChannel "cpu")
+              cpu-percentage (: channel :pop)
+              content (.. "CPU " (or cpu-percentage blocks-state-cpu-last) "%")
+              width (if block-config.auto-fit
+                      (text-to-width content block-config.margin-x)
+                      block-config.width)
+              height (if block-config.auto-fit
+                       (text-to-height content block-config.margin)
+                       block-config.height)]
+          (when (and cpu-percentage (tonumber cpu-percentage))
+            (if (> (tonumber cpu-percentage) block-config.ok-threshold)
+              (set block-config.foreground-color config.theme.red)
+              (set block-config.foreground-color config.theme.green)))
+          (when (tonumber cpu-percentage)
+            (set blocks-state-cpu-last (tonumber cpu-percentage)))
+          (bar-print bar content width height direction block-config)))})
 
 (set blocks.i3-workspace
      (fn [bar direction]
@@ -321,9 +342,16 @@
        "df -h /dev/nvme0n1p2 | tail -n 1 |  awk '{print $4}'"))
 
 (set blocks.i3-binding-state
-     (partial 
-       blocks.shell 
-       config.block.i3-binding-state
-       "i3-msg --socket $(i3 --get-socketpath) --type GET_BINDING_STATE | jq '.name'"))
+     (fn [bar direction]
+       (let [block-config config.block.i3-workspaces
+             i3-bs (shell-command "i3-msg --socket $(i3 --get-socketpath) --type GET_BINDING_STATE | jq '.name'")
+             content (if (= i3-bs "default") "" i3-bs)
+             width (if block-config.auto-fit
+                     (text-to-width content block-config.margin-x)
+                     block-config.width)
+             height (if block-config.auto-fit
+                      (text-to-height content block-config.margin)
+                      block-config.height)]
+       (bar-print bar content width height direction block-config))))
 
 blocks
