@@ -5,10 +5,14 @@
 (set themes.catppuccin {})
 (set themes.catppuccin.text [0.792156862745098  0.8274509803921568 0.9607843137254902])
 (set themes.catppuccin.gray [0.5019607843137255 0.5294117647058824 0.6352941176470588])
+(set themes.catppuccin.gray-1 [0.28627450980392155 0.30196078431372547 0.39215686274509803])
+(set themes.catppuccin.gray-2 [0.21176470588235294 0.22745098039215686 0.30980392156862746])
+(set themes.catppuccin.gray-3 [0.1411764705882353 0.15294117647058825 0.22745098039215686])
 (set themes.catppuccin.red [0.9294117647058824 0.5294117647058824 0.5882352941176471])
 (set themes.catppuccin.green [0.6509803921568628 0.8549019607843137 0.5843137254901961])
 (set themes.catppuccin.yellow [0.9333333333333333 0.8313725490196079 0.6235294117647059])
 (set themes.catppuccin.blue [0.5411764705882353 0.6784313725490196 0.9568627450980393])
+(set themes.catppuccin.purple [0.7764705882352941 0.6274509803921569 0.9647058823529412])
 (set themes.catppuccin.black [0.11764705882352941 0.12549019607843137 0.18823529411764706])
 
 (set config.theme themes.catppuccin)
@@ -39,9 +43,9 @@
 (set config.block.separator.font config.block.defaults.font)
 (set config.block.separator.font-size config.block.defaults.font-size)
 (set config.block.separator.love-font (love.graphics.newFont config.block.separator.font config.block.separator.font-size))
-(set config.block.separator.text "")
-(set config.block.separator.foreground-color config.block.defaults.foreground-color)
-(set config.block.separator.background-color config.block.defaults.background-color)
+(set config.block.separator.text "|")
+(set config.block.separator.foreground-color config.theme.gray-3)
+(set config.block.separator.background-color config.theme.black)
 (set config.block.separator.auto-fit config.block.defaults.auto-fit)
 
 ; configuration for the time block
@@ -101,9 +105,24 @@
 (set config.block.memory.font config.block.defaults.font)
 (set config.block.memory.font-size config.block.defaults.font-size)
 (set config.block.memory.love-font (love.graphics.newFont config.block.memory.font config.block.memory.font-size))
-(set config.block.memory.foreground-color config.block.defaults.foreground-color)
-(set config.block.memory.background-color config.block.defaults.background-color)
+(set config.block.memory.foreground-color config.theme.text)
+(set config.block.memory.background-color config.theme.gray-2)
 (set config.block.memory.auto-fit config.block.defaults.auto-fit)
+
+; configuration for the user block
+(set config.block.user {})
+(set config.block.user.width config.block.defaults.width)
+(set config.block.user.height config.block.defaults.height)
+(set config.block.user.margin config.block.defaults.margin)
+(set config.block.user.padding-x config.block.defaults.padding-x)
+(set config.block.user.radius config.block.defaults.radius)
+(set config.block.user.label " ")
+(set config.block.user.font config.block.defaults.font)
+(set config.block.user.font-size config.block.defaults.font-size)
+(set config.block.user.love-font (love.graphics.newFont config.block.user.font config.block.user.font-size))
+(set config.block.user.foreground-color config.theme.text)
+(set config.block.user.background-color config.theme.gray-2)
+(set config.block.user.auto-fit config.block.defaults.auto-fit)
 
 ; configuration for the cpu block
 (set config.block.cpu {})
@@ -128,11 +147,11 @@
 (set config.block.window-title.margin config.block.defaults.margin)
 (set config.block.window-title.padding-x config.block.defaults.padding-x)
 (set config.block.window-title.radius config.block.defaults.radius)
-(set config.block.window-title.label config.block.defaults.label)
+(set config.block.window-title.label " ")
 (set config.block.window-title.font "JetBrainsMonoNerdFont-Italic.ttf")
 (set config.block.window-title.font-size config.block.defaults.font-size)
 (set config.block.window-title.love-font (love.graphics.newFont config.block.window-title.font config.block.window-title.font-size))
-(set config.block.window-title.foreground-color config.theme.gray)
+(set config.block.window-title.foreground-color config.theme.gray-2)
 (set config.block.window-title.background-color config.theme.black)
 (set config.block.window-title.auto-fit config.block.defaults.auto-fit)
 
@@ -177,8 +196,8 @@
 (set config.block.free-disk-space.font config.block.defaults.font)
 (set config.block.free-disk-space.font-size config.block.defaults.font-size)
 (set config.block.free-disk-space.love-font (love.graphics.newFont config.block.free-disk-space.font config.block.free-disk-space.font-size))
-(set config.block.free-disk-space.foreground-color config.block.defaults.foreground-color)
-(set config.block.free-disk-space.background-color config.block.defaults.background-color)
+(set config.block.free-disk-space.foreground-color config.theme.text)
+(set config.block.free-disk-space.background-color config.theme.gray-2)
 (set config.block.free-disk-space.auto-fit config.block.defaults.auto-fit)
 
 ; configuration for the i3-binding-state block
@@ -188,12 +207,12 @@
 (set config.block.i3-binding-state.margin config.block.defaults.margin)
 (set config.block.i3-binding-state.padding-x config.block.defaults.padding-x)
 (set config.block.i3-binding-state.radius config.block.defaults.radius)
-(set config.block.i3-binding-state.label "MODE ")
+(set config.block.i3-binding-state.label " ")
 (set config.block.i3-binding-state.font config.block.defaults.font)
 (set config.block.i3-binding-state.font-size config.block.defaults.font-size)
 (set config.block.i3-binding-state.love-font (love.graphics.newFont config.block.i3-binding-state.font config.block.i3-binding-state.font-size))
 (set config.block.i3-binding-state.foreground-color config.theme.black)
-(set config.block.i3-binding-state.background-color config.theme.red)
+(set config.block.i3-binding-state.background-color config.theme.purple)
 (set config.block.i3-binding-state.auto-fit config.block.defaults.auto-fit)
 
 (fn text-to-width [block-config text _margin]
@@ -414,6 +433,35 @@
               (bar-print bar blocks-state-memory.content blocks-state-memory.width blocks-state-memory.height direction config.block.memory)
               bar))))})
 
+(var blocks-state-user {})
+(set blocks.user
+     {:load
+      (fn [bar _direction]
+        (local user (love.filesystem.read "user.fnl"))
+        (local luas (fennel.compile-string user))
+        (blocks.thread-shell-command luas)
+        bar)
+      :draw 
+      (fn [bar direction]
+        (let [channel (love.thread.getChannel "user")]
+          (if (channel:peek)
+            (let [block-config config.block.user 
+                  channel (love.thread.getChannel "user")
+                  user (channel:pop)
+                  content (.. block-config.label user)
+                  width (if block-config.auto-fit
+                          (text-to-width block-config content block-config.padding-x)
+                          block-config.width)
+                  height (if block-config.auto-fit
+                           (text-to-height block-config content block-config.margin)
+                           block-config.height)]
+              (when user
+                (set blocks-state-user {:user user :content content :width width :height height}))
+              (bar-print bar content width height direction block-config))
+            (if blocks-state-user.content
+              (bar-print bar blocks-state-user.content blocks-state-user.width blocks-state-user.height direction config.block.user)
+              bar))))})
+
 (var blocks-state-power {})
 (set blocks.power
      {:load
@@ -429,12 +477,12 @@
             (let [power (: channel :pop)
                   [state percent] (if power power ["nobattery" nil])
                   content (.. state (if percent (.. " " percent "%") ""))
-                  content (if (= content "nobattery")
-                            "AC"
-                            content)
-                  content (if (= state "charging")
-                            (.. "" (if percent (.. " " percent "%") ""))
-                            content)
+                  content (case state
+                            "charging" (.. "" (if percent (.. " " percent "%") ""))
+                            "battery" (.. "" (if percent (.. " " percent "%") ""))
+                            "charged" (.. "" (if percent (.. " " percent "%") ""))
+                            "nobattery" (.. "" " AC")
+                            _ content)
                   width (if config.block.power.auto-fit
                           (text-to-width config.block.power content config.block.power.padding-x)
                           config.block.power.width)
@@ -443,8 +491,10 @@
                            config.block.power.height)
                   block-config config.block.power]
               (when (= state "battery")
-                (set block-config.foreground-color config.theme.black)
-                (set block-config.background-color config.theme.red))
+                (case percent
+                  (where p (> p 50)) (set block-config.background-color config.theme.yellow)
+                  (where p (<= p 50 )) (set block-config.background-color config.theme.red))
+                (set block-config.foreground-color config.theme.black))
               (when (= state "charging")
                 (set block-config.foreground-color config.theme.black)
                 (set block-config.background-color config.theme.yellow))

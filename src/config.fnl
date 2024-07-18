@@ -20,7 +20,9 @@
 
 (set config.blocks 
      {:left 
-      [blocks.i3-workspace
+      [blocks.user
+       blocks.separator
+       blocks.i3-workspace
        blocks.separator
        blocks.i3-workspaces
        blocks.separator
