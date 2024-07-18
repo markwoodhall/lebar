@@ -314,6 +314,7 @@
                 (set block-config.background-color config.theme.green))
               (when power
                 (set blocks-state-power {:power power :content content :width width :height height}))
+
               (bar-print bar content width height direction block-config))
             (bar-print bar blocks-state-power.content blocks-state-power.width blocks-state-power.height direction config.block.power))))})
 

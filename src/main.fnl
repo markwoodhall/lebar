@@ -11,6 +11,26 @@
 
 (var bar {})
 
+(fn love.run []
+  (when love.load (love.load (love.arg.parseGameArguments arg) arg))
+  (when love.timer (love.timer.step))
+  (var dt 0)
+  (fn []
+    (when love.event
+      (love.event.pump)
+      (each [name a b c d e f (love.event.poll)]
+        (when (= name :quit)
+          (when (or (not love.quit) (not (love.quit)))
+            (let [___antifnl_rtn_1___ (or a 0)]
+              (lua "return ___antifnl_rtn_1___"))))
+        ((. love.handlers name) a b c d e f)))
+    (when love.timer (set dt (love.timer.step)))
+    (when love.update (love.update dt))
+    (when (and love.graphics (love.graphics.isActive)) (love.graphics.origin)
+      (when love.draw (love.draw))
+      (love.graphics.present))
+    (when love.timer (love.timer.sleep 0.001))))	
+
 (fn love.load []
   (love.graphics.setFont (love.graphics.newFont config.font config.font-size))
   (set bar (window.place-window config.window))
@@ -18,10 +38,12 @@
 
 (fn love.draw []
   (let [bg config.background-color
-        fg config.foreground-color]
-    (love.graphics.clear bg)
-    (love.graphics.setColor fg)
-    (set bar (renderer.render-bar bar)))
+        fg config.foreground-color
+        channel (love.thread.getChannel "draw")]
+    (when (channel:pop)
+      (love.graphics.clear bg)
+      (love.graphics.setColor fg)
+      (set bar (renderer.render-bar bar))))
   (love.timer.sleep config.refresh-seconds)
   (collectgarbage "collect"))
 
