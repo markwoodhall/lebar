@@ -23,7 +23,7 @@ fi
 # Set the window type to DOCK
 xprop -id $APP_WINDOW_ID -f _NET_WM_WINDOW_TYPE 32a -set _NET_WM_WINDOW_TYPE "_NET_WM_WINDOW_TYPE_DOCK"
 # Set the window state to STICKY and ABOVE
-xprop -id $APP_WINDOW_ID -f _NET_WM_STATE 32a -set _NET_WM_STATE "_NET_WM_STATE_STICKY, _NET_WM_STATE_ABOVE"
+xprop -id $APP_WINDOW_ID -f _NET_WM_STATE 32a -set _NET_WM_STATE "_NET_WM_STATE_STICKY, _NET_WM_STATE_SKIP_TASKBAR, _NET_WM_STATE_ABOVE"
 # Set the strut partial properties to reserve space
 # Adjust these values as needed for your specific dock size and position
 LEFT=0

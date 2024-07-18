@@ -1,13 +1,19 @@
 (require "love.timer")
+(var last-result "")
 (while true
-  (os.execute "free | awk '/^Mem/ { printf(\"RAM %.0f%\", $3/$2 * 100.0) }' > lebar-memory")
+  (os.execute "free | awk '/^Mem/ { printf(\"%.0f%\", $3/$2 * 100.0) }' > lebar-memory")
   (let [file (io.open "lebar-memory" "r")
-        result (file:read "*a")
-        channel (love.thread.getChannel "memory")]
-    (channel:push 
-      (if result
-        (-> result
-            (string.gsub "\"" "")
-            (string.gsub "^%s*(.-)%s*$" "%1"))
-        ""))
+        result (if file (file:read "*a") last-result)
+        draw-channel (love.thread.getChannel "draw")
+        channel (love.thread.getChannel "memory")
+        result (if result
+                 (-> result
+                     (string.gsub "\"" "")
+                     (string.gsub "^%s*(.-)%s*$" "%1"))
+                 "")]
+    (when (not= last-result result)
+      (channel:push 
+        result)
+      (draw-channel:push true))
+    (set last-result result)
     (love.timer.sleep 30)))

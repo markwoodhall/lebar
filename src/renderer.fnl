@@ -2,7 +2,12 @@
 (local config (require "config.fnl"))
 
 (fn render-block [bar block direction] 
-  (block bar direction))
+  (local (ok result) (pcall (fn [] (block bar direction))))
+  (if ok
+    result
+    (do
+      (print (.. "Error rendering block: " result))
+      bar)))
 
 (set renderer.load-bar
      (fn [bar] 

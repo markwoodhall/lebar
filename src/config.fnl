@@ -16,7 +16,7 @@
 (set config.window {})
 (set config.window.position :top)
 (set config.window.margin 4)
-(set config.window.height 30)
+(set config.window.height 32)
 
 (set config.blocks 
      {:left 
@@ -24,9 +24,9 @@
        blocks.separator
        blocks.i3-workspaces
        blocks.separator
-       blocks.window-title 
+       blocks.i3-binding-state
        blocks.separator
-       blocks.i3-binding-state]
+       blocks.window-title]
       :right 
       [blocks.time 
        blocks.separator
