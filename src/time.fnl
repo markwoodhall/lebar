@@ -5,8 +5,8 @@
   (let [time (os.date "blocks.config.block.time.format")]
     (let [channel (love.thread.getChannel "time")
           draw-channel (love.thread.getChannel "draw")]
-      (when (not= last-result time)
+      (when (and (= (channel:getCount) 0) (not= last-result time))
         (channel:push time)
-        (draw-channel:push true)))
+        (draw-channel:supply true)))
     (set last-result time))
-  (love.timer.sleep 5))
+  (love.timer.sleep 30))

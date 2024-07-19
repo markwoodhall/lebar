@@ -101,7 +101,7 @@
 (set config.block.memory.margin config.block.defaults.margin)
 (set config.block.memory.padding-x config.block.defaults.padding-x)
 (set config.block.memory.radius config.block.defaults.radius)
-(set config.block.memory.label "RAM ")
+(set config.block.memory.label " RAM ")
 (set config.block.memory.font config.block.defaults.font)
 (set config.block.memory.font-size config.block.defaults.font-size)
 (set config.block.memory.love-font (love.graphics.newFont config.block.memory.font config.block.memory.font-size))
@@ -170,21 +170,6 @@
 (set config.block.i3-workspace.background-color config.theme.green)
 (set config.block.i3-workspace.auto-fit config.block.defaults.auto-fit)
 
-; configuration for the i3-workspaces block
-(set config.block.i3-workspaces {})
-(set config.block.i3-workspaces.width config.block.defaults.width)
-(set config.block.i3-workspaces.height config.block.defaults.height)
-(set config.block.i3-workspaces.margin config.block.defaults.margin)
-(set config.block.i3-workspaces.padding-x config.block.defaults.padding-x)
-(set config.block.i3-workspaces.radius config.block.defaults.radius)
-(set config.block.i3-workspaces.label config.block.defaults.label)
-(set config.block.i3-workspaces.font config.block.defaults.font)
-(set config.block.i3-workspaces.font-size config.block.defaults.font-size)
-(set config.block.i3-workspaces.love-font (love.graphics.newFont config.block.i3-workspaces.font config.block.i3-workspaces.font-size))
-(set config.block.i3-workspaces.foreground-color config.theme.gray)
-(set config.block.i3-workspaces.background-color config.block.defaults.background-color)
-(set config.block.i3-workspaces.auto-fit config.block.defaults.auto-fit)
-
 ; configuration for the free-disk-space block
 (set config.block.free-disk-space {})
 (set config.block.free-disk-space.width config.block.defaults.width)
@@ -192,13 +177,29 @@
 (set config.block.free-disk-space.margin config.block.defaults.margin)
 (set config.block.free-disk-space.padding-x config.block.defaults.padding-x)
 (set config.block.free-disk-space.radius config.block.defaults.radius)
-(set config.block.free-disk-space.label "DISK ")
+(set config.block.free-disk-space.label " DISK ")
 (set config.block.free-disk-space.font config.block.defaults.font)
 (set config.block.free-disk-space.font-size config.block.defaults.font-size)
 (set config.block.free-disk-space.love-font (love.graphics.newFont config.block.free-disk-space.font config.block.free-disk-space.font-size))
 (set config.block.free-disk-space.foreground-color config.theme.text)
 (set config.block.free-disk-space.background-color config.theme.gray-2)
 (set config.block.free-disk-space.auto-fit config.block.defaults.auto-fit)
+
+
+; configuration for the pacman block
+(set config.block.pacman {})
+(set config.block.pacman.width config.block.defaults.width)
+(set config.block.pacman.height config.block.defaults.height)
+(set config.block.pacman.margin config.block.defaults.margin)
+(set config.block.pacman.padding-x config.block.defaults.padding-x)
+(set config.block.pacman.radius config.block.defaults.radius)
+(set config.block.pacman.label " ")
+(set config.block.pacman.font config.block.defaults.font)
+(set config.block.pacman.font-size config.block.defaults.font-size)
+(set config.block.pacman.love-font (love.graphics.newFont config.block.pacman.font config.block.pacman.font-size))
+(set config.block.pacman.foreground-color config.theme.text)
+(set config.block.pacman.background-color config.theme.gray-2)
+(set config.block.pacman.auto-fit config.block.defaults.auto-fit)
 
 ; configuration for the i3-binding-state block
 (set config.block.i3-binding-state {})
@@ -324,8 +325,30 @@
               (bar-print bar blocks-state-time.content blocks-state-time.width blocks-state-time.height direction config.block.time)
               bar))))})
 
-(var blocks-state-i3-workspaces {})
-(set blocks.i3-workspaces
+(fn expand-bar [col bar direction block-config]
+  (accumulate [s bar
+               _ n (ipairs col)]
+    (let [content (. n :name)
+          focused (. n :focused)
+          width (if config.block.i3-workspace.auto-fit
+                  (text-to-width config.block.i3-workspace content block-config.padding-x)
+                  block-config.width)
+          height (if config.block.i3-workspace.auto-fit
+                   (text-to-height config.block.i3-workspace content block-config.margin)
+                   block-config.height)]
+      (if focused
+        (do
+          (set block-config.foreground-color config.theme.black)
+          (set block-config.background-color config.theme.green))
+        (do
+          (set block-config.foreground-color config.theme.black)
+          (set block-config.background-color config.theme.gray)))
+
+      (let [new-bar (bar-print s content width height direction block-config)]
+        (blocks.separator new-bar direction)))))
+
+(var blocks-state-i3-workspace {})
+(set blocks.i3-workspace
      {:load
       (fn [bar _direction]
         (local i3 (love.filesystem.read "i3.fnl"))
@@ -334,49 +357,21 @@
         bar)
       :draw 
       (fn [bar direction]
-        (let [channel (love.thread.getChannel "i3wss")]
-          (if (: channel :peek)
-            (let [ws (: channel :pop)
-                  content (.. ws)
-                  width (if config.block.i3-workspaces.auto-fit
-                          (text-to-width config.block.i3-workspaces content config.block.i3-workspaces.padding-x)
-                          config.block.i3-workspaces.width)
-                  height (if config.block.i3-workspaces.auto-fit
-                           (text-to-height config.block.i3-workspaces content config.block.i3-workspaces.margin)
-                           config.block.i3-workspaces.height)
-                  block-config config.block.i3-workspaces]
-              (when ws
-                (set blocks-state-i3-workspaces {:i3-workspaces ws :content content :width width :height height}))
-              (bar-print bar content width height direction block-config))
-            (if blocks-state-i3-workspaces.content
-              (bar-print bar blocks-state-i3-workspaces.content blocks-state-i3-workspaces.width blocks-state-i3-workspaces.height direction config.block.i3-workspaces)
-              bar))))})
-
-(var blocks-state-i3-workspace {})
-(set blocks.i3-workspace
-     {:load
-      (fn [bar _direction]
-        bar)
-      :draw 
-      (fn [bar direction]
         (let [channel (love.thread.getChannel "i3ws")]
           (set config.block.i3-workspace.foreground-color config.theme.black)
           (set config.block.i3-workspace.background-color config.theme.green)
-          (if (: channel :peek)
-            (let [ws (: channel :pop)
-                  content (.. ws)
-                  width (if config.block.i3-workspace.auto-fit
-                          (text-to-width config.block.i3-workspace content config.block.i3-workspace.padding-x)
-                          config.block.i3-workspace.width)
-                  height (if config.block.i3-workspace.auto-fit
-                           (text-to-height config.block.i3-workspace content config.block.i3-workspace.margin)
-                           config.block.i3-workspace.height)
+          (if (channel:peek)
+            (let [ws (channel:pop)
+                  workspaces (icollect [v (ws:gmatch "[^,]+")]
+                               (let [t (v:gmatch "[^%-]+")]
+                                 {:name (t) :focused (= (t) "true")}))
+
                   block-config config.block.i3-workspace]
               (when ws
-                (set blocks-state-i3-workspace {:i3-workspace ws :content content :width width :height height}))
-              (bar-print bar content width height direction block-config))
-            (if blocks-state-i3-workspace.content
-              (bar-print bar blocks-state-i3-workspace.content blocks-state-i3-workspace.width blocks-state-i3-workspace.height direction config.block.i3-workspace)
+                (set blocks-state-i3-workspace {:i3-workspace ws :workspaces workspaces}))
+              (expand-bar workspaces bar direction block-config))
+            (if blocks-state-i3-workspace.workspaces
+              (expand-bar blocks-state-i3-workspace.workspaces bar direction config.block.i3-workspace)
               bar))))})
 
 (var blocks-state-i3-binding-state {})
@@ -506,6 +501,38 @@
               (bar-print bar content width height direction block-config))
             (if blocks-state-power.content
               (bar-print bar blocks-state-power.content blocks-state-power.width blocks-state-power.height direction config.block.power)
+              bar))))})
+
+(var blocks-state-pacman {})
+(set blocks.pacman
+     {:load
+      (fn [bar _direction]
+        (local pacman (love.filesystem.read "pacman.fnl"))
+        (local luas (fennel.compile-string pacman))
+        (blocks.thread-shell-command luas)
+        bar)
+      :draw 
+      (fn [bar direction]
+        (let [channel (love.thread.getChannel "pacman")]
+          (if (channel:peek)
+            (let [block-config config.block.pacman
+                  pacman (channel:pop)
+                  content (.. block-config.label pacman)
+                  width (if config.block.pacman.auto-fit
+                          (text-to-width config.block.pacman content config.block.pacman.padding-x)
+                          config.block.pacman.width)
+                  height (if config.block.pacman.auto-fit
+                           (text-to-height config.block.pacman content config.block.pacman.margin)
+                           config.block.pacman.height)]
+              (case (tonumber pacman)
+                (where p (<= p 50)) (set block-config.background-color config.theme.green)
+                (where p (<= p 100)) (set block-config.background-color config.theme.yellow)
+                (where p (> p 100)) (set block-config.background-color config.theme.red))
+              (when pacman
+                (set blocks-state-pacman {:pacman pacman :content content :width width :height height}))
+              (bar-print bar content width height direction block-config))
+            (if blocks-state-pacman.content
+              (bar-print bar blocks-state-pacman.content blocks-state-pacman.width blocks-state-pacman.height direction config.block.pacman)
               bar))))})
 
 (fn thread-shell-command [command]

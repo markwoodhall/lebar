@@ -40,14 +40,17 @@
   (let [bg config.background-color
         fg config.foreground-color
         channel (love.thread.getChannel "draw")]
-    (when (channel:demand)
-      ;; clear the channel draw will run anyway now
-      ;; and we don't need to draw again until something else changes
-      (channel:clear)
-      (print "Drawing")
-      (love.graphics.clear bg)
-      (love.graphics.setColor fg)
-      (set bar (renderer.render-bar bar))))
+    (love.graphics.clear bg)
+    (love.graphics.setColor fg)
+    (if config.optimise-render 
+      (when (or (channel:demand))
+        ;; clear the channel draw will run anyway now
+        ;; and we don't need to draw again until something else changes
+        ;; (channel:clear)
+        (set bar (renderer.render-bar bar)))
+      (set bar (renderer.render-bar bar)))
+    (channel:clear)
+    (love.timer.sleep config.refresh-seconds))
   (collectgarbage "collect"))
 
 (fn love.keypressed [_key])

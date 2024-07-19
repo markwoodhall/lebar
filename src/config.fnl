@@ -8,7 +8,8 @@
 (set config.foreground-color
      [0.792156862745098  0.8274509803921568 0.9607843137254902])
 
-(set config.refresh-seconds 0.1)
+(set config.refresh-seconds 0.5)
+(set config.optimise-render false)
 
 (set config.font "JetBrainsMonoNerdFont-Regular.ttf")
 (set config.font-size 16)
@@ -23,9 +24,6 @@
       [blocks.user
        blocks.separator
        blocks.i3-workspace
-       blocks.separator
-       blocks.i3-workspaces
-       blocks.separator
        blocks.i3-binding-state
        blocks.separator
        blocks.window-title]
@@ -38,6 +36,8 @@
        blocks.separator
        blocks.cpu
        blocks.separator
-       blocks.free-disk-space]})
+       blocks.free-disk-space
+       blocks.separator
+       blocks.pacman]})
 
 config

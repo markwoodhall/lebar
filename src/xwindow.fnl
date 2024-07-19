@@ -11,9 +11,9 @@
                      (string.gsub "\"" "")
                      (string.gsub "^%s*(.-)%s*$" "%1"))
                  "")]
-    (when (not= last-result result)
+    (when (and (= (channel:getCount) 0) (not= last-result result))
       (channel:push 
         result)
-      (draw-channel:push true))
+      (draw-channel:supply true))
     (set last-result result)
     (love.timer.sleep 0.6)))
