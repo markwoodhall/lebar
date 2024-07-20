@@ -197,7 +197,7 @@
 (set config.block.pacman.font config.block.defaults.font)
 (set config.block.pacman.font-size config.block.defaults.font-size)
 (set config.block.pacman.love-font (love.graphics.newFont config.block.pacman.font config.block.pacman.font-size))
-(set config.block.pacman.foreground-color config.theme.text)
+(set config.block.pacman.foreground-color config.theme.black)
 (set config.block.pacman.background-color config.theme.gray-2)
 (set config.block.pacman.auto-fit config.block.defaults.auto-fit)
 
