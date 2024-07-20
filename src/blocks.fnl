@@ -325,26 +325,18 @@
               (bar-print bar blocks-state-time.content blocks-state-time.width blocks-state-time.height direction config.block.time)
               bar))))})
 
-(fn expand-bar [col bar direction block-config]
-  (accumulate [s bar
+(fn expand-bar [col bar direction block-config content-fn config-fn]
+  (accumulate [b bar
                _ n (ipairs col)]
-    (let [content (. n :name)
-          focused (. n :focused)
-          width (if config.block.i3-workspace.auto-fit
+    (let [content (content-fn n)
+          width (if block-config.auto-fit
                   (text-to-width config.block.i3-workspace content block-config.padding-x)
                   block-config.width)
-          height (if config.block.i3-workspace.auto-fit
+          height (if block-config.auto-fit
                    (text-to-height config.block.i3-workspace content block-config.margin)
                    block-config.height)]
-      (if focused
-        (do
-          (set block-config.foreground-color config.theme.black)
-          (set block-config.background-color config.theme.green))
-        (do
-          (set block-config.foreground-color config.theme.black)
-          (set block-config.background-color config.theme.gray)))
-
-      (let [new-bar (bar-print s content width height direction block-config)]
+      (config-fn n block-config)
+      (let [new-bar (bar-print b content width height direction block-config)]
         (blocks.separator new-bar direction)))))
 
 (var blocks-state-i3-workspace {})
@@ -357,7 +349,18 @@
         bar)
       :draw 
       (fn [bar direction]
-        (let [channel (love.thread.getChannel "i3ws")]
+        (let [channel (love.thread.getChannel "i3ws")
+              content-fn (fn [i] (. i :name))
+              config-fn 
+              (fn [i block-config] 
+                (let [focused (. i :focused)]
+                  (if focused
+                    (do
+                      (set block-config.foreground-color config.theme.black)
+                      (set block-config.background-color config.theme.green))
+                    (do
+                      (set block-config.foreground-color config.theme.black)
+                      (set block-config.background-color config.theme.gray)))))]
           (set config.block.i3-workspace.foreground-color config.theme.black)
           (set config.block.i3-workspace.background-color config.theme.green)
           (if (channel:peek)
@@ -369,9 +372,9 @@
                   block-config config.block.i3-workspace]
               (when ws
                 (set blocks-state-i3-workspace {:i3-workspace ws :workspaces workspaces}))
-              (expand-bar workspaces bar direction block-config))
+              (expand-bar workspaces bar direction block-config content-fn config-fn))
             (if blocks-state-i3-workspace.workspaces
-              (expand-bar blocks-state-i3-workspace.workspaces bar direction config.block.i3-workspace)
+              (expand-bar blocks-state-i3-workspace.workspaces bar direction config.block.i3-workspace content-fn config-fn)
               bar))))})
 
 (var blocks-state-i3-binding-state {})
