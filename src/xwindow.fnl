@@ -8,6 +8,7 @@
         channel (love.thread.getChannel "window-title")
         result (if result
                  (-> result
+                     (string.sub 1 45)
                      (string.gsub "\"" "")
                      (string.gsub "^%s*(.-)%s*$" "%1"))
                  "")]
