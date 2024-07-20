@@ -27,7 +27,7 @@
 (set config.block.defaults.auto-fit true)
 (set config.block.defaults.label "")
 (set config.block.defaults.font "JetBrainsMonoNerdFont-Regular.ttf")
-(set config.block.defaults.font-size 16)
+(set config.block.defaults.font-size 14)
 (set config.block.defaults.radius 4)
 (set config.block.defaults.love-font (love.graphics.newFont config.block.defaults.font config.block.defaults.font-size))
 (set config.block.defaults.background-color config.theme.black)
@@ -44,7 +44,7 @@
 (set config.block.separator.font-size config.block.defaults.font-size)
 (set config.block.separator.love-font (love.graphics.newFont config.block.separator.font config.block.separator.font-size))
 (set config.block.separator.text "|")
-(set config.block.separator.foreground-color config.theme.gray-3)
+(set config.block.separator.foreground-color config.theme.gray-2)
 (set config.block.separator.background-color config.theme.black)
 (set config.block.separator.auto-fit config.block.defaults.auto-fit)
 
@@ -78,6 +78,7 @@
 (set config.block.power.foreground-color config.theme.text)
 (set config.block.power.background-color config.theme.black)
 (set config.block.power.auto-fit config.block.defaults.auto-fit)
+(set config.block.power.include-remaining-time true)
 
 ; configuration for the shell block
 (set config.block.shell {})
@@ -101,12 +102,12 @@
 (set config.block.memory.margin config.block.defaults.margin)
 (set config.block.memory.padding-x config.block.defaults.padding-x)
 (set config.block.memory.radius config.block.defaults.radius)
-(set config.block.memory.label " RAM ")
+(set config.block.memory.label " MEM ")
 (set config.block.memory.font config.block.defaults.font)
 (set config.block.memory.font-size config.block.defaults.font-size)
 (set config.block.memory.love-font (love.graphics.newFont config.block.memory.font config.block.memory.font-size))
 (set config.block.memory.foreground-color config.theme.text)
-(set config.block.memory.background-color config.theme.gray-2)
+(set config.block.memory.background-color config.theme.black)
 (set config.block.memory.auto-fit config.block.defaults.auto-fit)
 
 ; configuration for the user block
@@ -177,12 +178,12 @@
 (set config.block.free-disk-space.margin config.block.defaults.margin)
 (set config.block.free-disk-space.padding-x config.block.defaults.padding-x)
 (set config.block.free-disk-space.radius config.block.defaults.radius)
-(set config.block.free-disk-space.label " DISK ")
+(set config.block.free-disk-space.label " ")
 (set config.block.free-disk-space.font config.block.defaults.font)
 (set config.block.free-disk-space.font-size config.block.defaults.font-size)
 (set config.block.free-disk-space.love-font (love.graphics.newFont config.block.free-disk-space.font config.block.free-disk-space.font-size))
 (set config.block.free-disk-space.foreground-color config.theme.text)
-(set config.block.free-disk-space.background-color config.theme.gray-2)
+(set config.block.free-disk-space.background-color config.theme.black)
 (set config.block.free-disk-space.auto-fit config.block.defaults.auto-fit)
 
 
@@ -193,12 +194,12 @@
 (set config.block.pacman.margin config.block.defaults.margin)
 (set config.block.pacman.padding-x config.block.defaults.padding-x)
 (set config.block.pacman.radius config.block.defaults.radius)
-(set config.block.pacman.label " ")
+(set config.block.pacman.label "  ")
 (set config.block.pacman.font config.block.defaults.font)
 (set config.block.pacman.font-size config.block.defaults.font-size)
 (set config.block.pacman.love-font (love.graphics.newFont config.block.pacman.font config.block.pacman.font-size))
-(set config.block.pacman.foreground-color config.theme.black)
-(set config.block.pacman.background-color config.theme.gray-2)
+(set config.block.pacman.foreground-color config.theme.text)
+(set config.block.pacman.background-color config.theme.black)
 (set config.block.pacman.auto-fit config.block.defaults.auto-fit)
 
 ; configuration for the i3-binding-state block
@@ -306,8 +307,6 @@
       :draw 
       (fn [bar direction]
         (let [channel (love.thread.getChannel "time")]
-          (set config.block.time.foreground-color config.theme.black)
-          (set config.block.time.background-color config.theme.blue)
           (if (: channel :peek)
             (let [time (: channel :pop)
                   content (.. " " time)
@@ -479,16 +478,17 @@
                             "charging" (.. "" (if percent (.. " " percent "%") ""))
                             "battery" 
                             (case percent
-                              (where p (< p 10)) (.. "" (if percent (.. " " percent "%") ""))
-                              (where p (< p 30)) (.. "" (if percent (.. " " percent "%") ""))
-                              (where p (< p 50)) (.. "" (if percent (.. " " percent "%") ""))
-                              (where p (< p 80)) (.. "" (if percent (.. " " percent "%") ""))
-                              (where p (< p 80)) (.. "" (if percent (.. " " percent "%") ""))
+                              (where p (< p 10)) (.. "" (if percent (.. "  " percent "%") ""))
+                              (where p (< p 30)) (.. "" (if percent (.. "  " percent "%") ""))
+                              (where p (< p 50)) (.. "" (if percent (.. "  " percent "%") ""))
+                              (where p (< p 80)) (.. "" (if percent (.. "  " percent "%") ""))
+                              (where p (< p 80)) (.. "" (if percent (.. "  " percent "%") ""))
                               _ (.. "" (if percent (.. " " percent "%") "")))
                             "charged" (.. "" (if percent (.. " " percent "%") ""))
                             "nobattery" (.. "" " AC")
                             _ content)
-                  content (if hours (.. content " " (string.format "%.2f" hours) "(h)") content)
+                  remaining (if config.block.power.include-remaining-time (.. " " (string.format "%.2f" hours) "(h)") "")
+                  content (if hours (.. content  remaining) content)
                   width (if config.block.power.auto-fit
                           (text-to-width config.block.power content config.block.power.padding-x)
                           config.block.power.width)
@@ -498,16 +498,9 @@
                   block-config config.block.power]
               (when (= state "battery")
                 (case percent
-                  (where p (> p 75)) (set block-config.background-color config.theme.green)
-                  (where p (> p 50)) (set block-config.background-color config.theme.yellow)
-                  (where p (<= p 50 )) (set block-config.background-color config.theme.red))
-                (set block-config.foreground-color config.theme.black))
+                  (where p (<= p 50 )) (set block-config.background-color config.theme.red)))
               (when (= state "charging")
-                (set block-config.foreground-color config.theme.black)
-                (set block-config.background-color config.theme.yellow))
-              (when (= state "charged")
-                (set block-config.foreground-color config.theme.black)
-                (set block-config.background-color config.theme.green))
+                (set block-config.foreground-color config.theme.yellow))
               (when power
                 (set blocks-state-power {:power power :content content :width width :height height}))
               (bar-print bar content width height direction block-config))
@@ -529,7 +522,7 @@
           (if (channel:peek)
             (let [block-config config.block.pacman
                   pacman (channel:pop)
-                  content (.. block-config.label pacman)
+                  content (.. block-config.label (..  pacman " update(s)"))
                   width (if config.block.pacman.auto-fit
                           (text-to-width config.block.pacman content config.block.pacman.padding-x)
                           config.block.pacman.width)
@@ -537,9 +530,9 @@
                            (text-to-height config.block.pacman content config.block.pacman.margin)
                            config.block.pacman.height)]
               (case (tonumber pacman)
-                (where p (<= p 50)) (set block-config.background-color config.theme.green)
-                (where p (<= p 100)) (set block-config.background-color config.theme.yellow)
-                (where p (> p 100)) (set block-config.background-color config.theme.red))
+                (where p (<= p 50)) (set block-config.foreground-color config.theme.green)
+                (where p (<= p 100)) (set block-config.foreground-color config.theme.yellow)
+                (where p (> p 100)) (set block-config.foreground-color config.theme.red))
               (when pacman
                 (set blocks-state-pacman {:pacman pacman :content content :width width :height height}))
               (bar-print bar content width height direction block-config))

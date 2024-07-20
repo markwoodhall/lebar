@@ -22,7 +22,7 @@
 (set config.window {})
 (set config.window.position :top)
 (set config.window.margin 4)
-(set config.window.height 32)
+(set config.window.height 29)
 
 (set config.blocks 
      {:left 
