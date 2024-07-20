@@ -8,8 +8,13 @@
 (set config.foreground-color
      [0.792156862745098  0.8274509803921568 0.9607843137254902])
 
-(set config.refresh-seconds 0.5)
-(set config.optimise-render false)
+(set config.refresh-seconds 0.001)
+
+;; When set to true this will cause the render loop to 
+;; pause and wait for something to appear on the draw channel
+;; When set to false the render loop will onlu pause based on
+;; config.refresh-seconds
+(set config.render-on-change true)
 
 (set config.font "JetBrainsMonoNerdFont-Regular.ttf")
 (set config.font-size 16)

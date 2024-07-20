@@ -11,7 +11,9 @@
                      (string.gsub "\"" "")
                      (string.gsub "^%s*(.-)%s*$" "%1"))
                  "")]
-    (when (and (= (channel:getCount) 0) (not= last-result result))
+    (when file
+      (file:close))
+    (when (not= last-result result)
       (channel:push 
         result)
       (draw-channel:supply true))

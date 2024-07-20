@@ -131,7 +131,7 @@
 (set config.block.cpu.margin config.block.defaults.margin)
 (set config.block.cpu.padding-x config.block.defaults.padding-x)
 (set config.block.cpu.radius config.block.defaults.radius)
-(set config.block.cpu.label " CPU ")
+(set config.block.cpu.label " CPU ")
 (set config.block.cpu.font config.block.defaults.font)
 (set config.block.cpu.font-size config.block.defaults.font-size)
 (set config.block.cpu.love-font (love.graphics.newFont config.block.cpu.font config.block.cpu.font-size))
@@ -470,14 +470,22 @@
         (let [channel (love.thread.getChannel "power")]
           (if (: channel :peek)
             (let [power (: channel :pop)
-                  [state percent] (if power power ["nobattery" nil])
+                  [state percent hours] (if power power ["nobattery" nil])
                   content (.. state (if percent (.. " " percent "%") ""))
                   content (case state
                             "charging" (.. "" (if percent (.. " " percent "%") ""))
-                            "battery" (.. "" (if percent (.. " " percent "%") ""))
+                            "battery" 
+                            (case percent
+                              (where p (< p 10)) (.. "" (if percent (.. " " percent "%") ""))
+                              (where p (< p 30)) (.. "" (if percent (.. " " percent "%") ""))
+                              (where p (< p 50)) (.. "" (if percent (.. " " percent "%") ""))
+                              (where p (< p 80)) (.. "" (if percent (.. " " percent "%") ""))
+                              (where p (< p 80)) (.. "" (if percent (.. " " percent "%") ""))
+                              _ (.. "" (if percent (.. " " percent "%") "")))
                             "charged" (.. "" (if percent (.. " " percent "%") ""))
                             "nobattery" (.. "" " AC")
                             _ content)
+                  content (if hours (.. content " " (string.format "%.2f" hours) "(h)") content)
                   width (if config.block.power.auto-fit
                           (text-to-width config.block.power content config.block.power.padding-x)
                           config.block.power.width)
@@ -487,6 +495,7 @@
                   block-config config.block.power]
               (when (= state "battery")
                 (case percent
+                  (where p (> p 75)) (set block-config.background-color config.theme.green)
                   (where p (> p 50)) (set block-config.background-color config.theme.yellow)
                   (where p (<= p 50 )) (set block-config.background-color config.theme.red))
                 (set block-config.foreground-color config.theme.black))

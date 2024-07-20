@@ -42,7 +42,7 @@
         channel (love.thread.getChannel "draw")]
     (love.graphics.clear bg)
     (love.graphics.setColor fg)
-    (if config.optimise-render 
+    (if config.render-on-change 
       (when (or (channel:demand))
         ;; clear the channel draw will run anyway now
         ;; and we don't need to draw again until something else changes
