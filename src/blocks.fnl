@@ -487,7 +487,7 @@
                             "charged" (.. "" (if percent (.. " " percent "%") ""))
                             "nobattery" (.. "" " AC")
                             _ content)
-                  remaining (if config.block.power.include-remaining-time (.. " " (string.format "%.2f" hours) "(h)") "")
+                  remaining (if (and config.block.power.include-remaining-time (not= state "nobattery")) (.. " " (string.format "%.2f" hours) "(h)") "")
                   content (if hours (.. content  remaining) content)
                   width (if config.block.power.auto-fit
                           (text-to-width config.block.power content config.block.power.padding-x)
@@ -611,14 +611,17 @@
 (var blocks-state-free-disk-space {})
 (set blocks.free-disk-space
      {:load
-      (fn [bar _direction]
+      (fn [mount id bar _direction]
         (local free-disk-space (love.filesystem.read "disk.fnl"))
-        (local luas (fennel.compile-string free-disk-space))
+        (local (with-id _) (string.gsub free-disk-space "blocks%.config%.block%.free%-disk%-space%.id" id))
+        (local (with-mount _) (string.gsub with-id "blocks%.config%.block%.free%-disk%-space%.mount" mount))
+        (local luas (fennel.compile-string with-mount))
         (blocks.thread-shell-command luas)
+        (tset blocks-state-free-disk-space id {})
         bar)
       :draw 
-      (fn [bar direction]
-        (let [channel (love.thread.getChannel "disk")]
+      (fn [mount id bar direction]
+        (let [channel (love.thread.getChannel (.. mount ".disk"))]
           (if (channel:peek)
             (let [block-config config.block.free-disk-space 
                   free-disk-space (channel:pop)
@@ -630,10 +633,11 @@
                            (text-to-height block-config content block-config.margin)
                            block-config.height)]
               (when free-disk-space
-                (set blocks-state-free-disk-space {:free-disk-space free-disk-space :content content :width width :height height}))
+                (tset blocks-state-free-disk-space id {:free-disk-space free-disk-space :content content :width width :height height}))
               (bar-print bar content width height direction block-config))
-            (if blocks-state-free-disk-space.content
-              (bar-print bar blocks-state-free-disk-space.content blocks-state-free-disk-space.width blocks-state-free-disk-space.height direction config.block.free-disk-space)
+            (if (. (. blocks-state-free-disk-space id) :content)
+              (let [state (. blocks-state-free-disk-space id)]
+                (bar-print bar state.content state.width state.height direction config.block.free-disk-space))
               bar))))})
 
 blocks

@@ -15,34 +15,34 @@ xdotool set_window --overrideredirect 1 $HEX_ID
 xdotool windowunmap $HEX_ID
 xdotool windowmap $HEX_ID
 
-# Check if we found a window ID
-if [ -z "$APP_WINDOW_ID" ]; then
-  echo "No window found for PID $APP_PID. Exiting."
-  exit 1
-fi
-# Set the window type to DOCK
-xprop -id $APP_WINDOW_ID -f _NET_WM_WINDOW_TYPE 32a -set _NET_WM_WINDOW_TYPE "_NET_WM_WINDOW_TYPE_DOCK"
-# Set the window state to STICKY and ABOVE
-xprop -id $APP_WINDOW_ID -f _NET_WM_STATE 32a -set _NET_WM_STATE "_NET_WM_STATE_STICKY, _NET_WM_STATE_SKIP_TASKBAR, _NET_WM_STATE_ABOVE"
-# Set the strut partial properties to reserve space
-# Adjust these values as needed for your specific dock size and position
-LEFT=0
-RIGHT=0
-TOP=50
-BOTTOM=0
-LEFT_START_Y=0
-LEFT_END_Y=0
-RIGHT_START_Y=0
-RIGHT_END_Y=0
-TOP_START_X=0
-TOP_END_X=$(xdpyinfo | awk '/dimensions:/ {print $2}' | cut -d 'x' -f 1)
-BOTTOM_START_X=0
-BOTTOM_END_X=0
-xprop -id $APP_WINDOW_ID -f _NET_WM_STRUT_PARTIAL 32c -set _NET_WM_STRUT_PARTIAL \
-"$LEFT, $RIGHT, $TOP, $BOTTOM, $LEFT_START_Y, $LEFT_END_Y, $RIGHT_START_Y, $RIGHT_END_Y, $TOP_START_X, $TOP_END_X, $BOTTOM_START_X, $BOTTOM_END_X"
-xprop -id $APP_WINDOW_ID -f _NET_WM_STRUT 32c -set _NET_WM_STRUT \
-"$LEFT, $RIGHT, $TOP, $BOTTOM"
-xprop -id $APP_WINDOW_ID -f _NET_WM_DESKTOP 32c -set _NET_WM_DESKTOP 0xFFFFFFFF
-echo "Window type and strut properties set for window ID $APP_WINDOW_ID."
-# Keep the script running as long as the application is running
-wait $APP_PID
+## Check if we found a window ID
+#if [ -z "$APP_WINDOW_ID" ]; then
+#  echo "No window found for PID $APP_PID. Exiting."
+#  exit 1
+#fi
+## Set the window type to DOCK
+#xprop -id $APP_WINDOW_ID -f _NET_WM_WINDOW_TYPE 32a -set _NET_WM_WINDOW_TYPE "_NET_WM_WINDOW_TYPE_DOCK"
+## Set the window state to STICKY and ABOVE
+#xprop -id $APP_WINDOW_ID -f _NET_WM_STATE 32a -set _NET_WM_STATE "_NET_WM_STATE_STICKY, _NET_WM_STATE_SKIP_TASKBAR, _NET_WM_STATE_ABOVE"
+## Set the strut partial properties to reserve space
+## Adjust these values as needed for your specific dock size and position
+#LEFT=0
+#RIGHT=0
+#TOP=50
+#BOTTOM=0
+#LEFT_START_Y=0
+#LEFT_END_Y=0
+#RIGHT_START_Y=0
+#RIGHT_END_Y=0
+#TOP_START_X=0
+#TOP_END_X=$(xdpyinfo | awk '/dimensions:/ {print $2}' | cut -d 'x' -f 1)
+#BOTTOM_START_X=0
+#BOTTOM_END_X=0
+#xprop -id $APP_WINDOW_ID -f _NET_WM_STRUT_PARTIAL 32c -set _NET_WM_STRUT_PARTIAL \
+#"$LEFT, $RIGHT, $TOP, $BOTTOM, $LEFT_START_Y, $LEFT_END_Y, $RIGHT_START_Y, $RIGHT_END_Y, $TOP_START_X, $TOP_END_X, $BOTTOM_START_X, $BOTTOM_END_X"
+#xprop -id $APP_WINDOW_ID -f _NET_WM_STRUT 32c -set _NET_WM_STRUT \
+#"$LEFT, $RIGHT, $TOP, $BOTTOM"
+#xprop -id $APP_WINDOW_ID -f _NET_WM_DESKTOP 32c -set _NET_WM_DESKTOP 0xFFFFFFFF
+#echo "Window type and strut properties set for window ID $APP_WINDOW_ID."
+## Keep the script running as long as the application is running
+#wait $APP_PID
