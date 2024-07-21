@@ -186,7 +186,6 @@
 (set config.block.free-disk-space.background-color config.theme.black)
 (set config.block.free-disk-space.auto-fit config.block.defaults.auto-fit)
 
-
 ; configuration for the pacman block
 (set config.block.pacman {})
 (set config.block.pacman.width config.block.defaults.width)
@@ -620,12 +619,12 @@
         (tset blocks-state-free-disk-space id {})
         bar)
       :draw 
-      (fn [mount id bar direction]
+      (fn [mount id label bar direction]
         (let [channel (love.thread.getChannel (.. mount ".disk"))]
           (if (channel:peek)
             (let [block-config config.block.free-disk-space 
                   free-disk-space (channel:pop)
-                  content (.. block-config.label free-disk-space)
+                  content (.. (if label label block-config.label) free-disk-space)
                   width (if block-config.auto-fit
                           (text-to-width block-config content block-config.padding-x)
                           block-config.width)

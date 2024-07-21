@@ -42,10 +42,10 @@
        blocks.cpu
        blocks.separator
        {:load (partial (. blocks.free-disk-space :load) "/dev/nvme0n1p2" "ssd")
-        :draw (partial (. blocks.free-disk-space :draw) "/dev/nvme0n1p2" "ssd")}
-       {:load (partial (. blocks.free-disk-space :load) "/mnt/wwn-0x5002538e40f7ef3c-part1" "data")
-        :draw (partial (. blocks.free-disk-space :draw) "/mnt/wwn-0x5002538e40f7ef3c-part1" "data")}
-
+        :draw (partial (. blocks.free-disk-space :draw) "/dev/nvme0n1p2" "ssd" "/ ")}
+       blocks.separator
+       {:load (partial (. blocks.free-disk-space :load) "/home" "data")
+        :draw (partial (. blocks.free-disk-space :draw) "/home" "data" "/home ")}
        blocks.separator
        blocks.pacman]})
 
