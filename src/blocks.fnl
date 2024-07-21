@@ -482,7 +482,7 @@
                               (where p (< p 30)) (.. "" (if percent (.. "  " percent "%") ""))
                               (where p (< p 50)) (.. "" (if percent (.. "  " percent "%") ""))
                               (where p (< p 80)) (.. "" (if percent (.. "  " percent "%") ""))
-                              (where p (< p 80)) (.. "" (if percent (.. "  " percent "%") ""))
+                              (where p (< p 100)) (.. "" (if percent (.. "  " percent "%") ""))
                               _ (.. "" (if percent (.. " " percent "%") "")))
                             "charged" (.. "" (if percent (.. " " percent "%") ""))
                             "nobattery" (.. "" " AC")
@@ -498,7 +498,10 @@
                   block-config config.block.power]
               (when (= state "battery")
                 (case percent
-                  (where p (<= p 50 )) (set block-config.background-color config.theme.red)))
+                  (where p (<= p 50 )) 
+                  (do 
+                    (set block-config.foreground-color config.theme.black)
+                    (set block-config.background-color config.theme.red))))
               (when (= state "charging")
                 (set block-config.foreground-color config.theme.yellow))
               (when power
