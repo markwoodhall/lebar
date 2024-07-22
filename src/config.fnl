@@ -47,6 +47,8 @@
        {:load (partial (. blocks.free-disk-space :load) "/home" "data")
         :draw (partial (. blocks.free-disk-space :draw) "/home" "data" "/home ")}
        blocks.separator
+       blocks.dunst
+       blocks.separator
        blocks.pacman]})
 
 config

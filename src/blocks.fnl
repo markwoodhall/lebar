@@ -110,6 +110,21 @@
 (set config.block.memory.background-color config.theme.black)
 (set config.block.memory.auto-fit config.block.defaults.auto-fit)
 
+; configuration for the dunst block
+(set config.block.dunst {})
+(set config.block.dunst.width config.block.defaults.width)
+(set config.block.dunst.height config.block.defaults.height)
+(set config.block.dunst.margin config.block.defaults.margin)
+(set config.block.dunst.padding-x config.block.defaults.padding-x)
+(set config.block.dunst.radius config.block.defaults.radius)
+(set config.block.dunst.label " ")
+(set config.block.dunst.font config.block.defaults.font)
+(set config.block.dunst.font-size config.block.defaults.font-size)
+(set config.block.dunst.love-font (love.graphics.newFont config.block.dunst.font config.block.dunst.font-size))
+(set config.block.dunst.foreground-color config.theme.red)
+(set config.block.dunst.background-color config.theme.black)
+(set config.block.dunst.auto-fit config.block.defaults.auto-fit)
+
 ; configuration for the user block
 (set config.block.user {})
 (set config.block.user.width config.block.defaults.width)
@@ -398,6 +413,35 @@
               (bar-print bar content width height direction block-config))
             (if blocks-state-i3-binding-state.content
               (bar-print bar blocks-state-i3-binding-state.content blocks-state-i3-binding-state.width blocks-state-i3-binding-state.height direction config.block.i3-binding-state)
+              bar))))})
+
+(var blocks-state-dunst {})
+(set blocks.dunst
+     {:load
+      (fn [bar _direction]
+        (local dunst (love.filesystem.read "dunst.fnl"))
+        (local luas (fennel.compile-string dunst))
+        (blocks.thread-shell-command luas)
+        bar)
+      :draw 
+      (fn [bar direction]
+        (let [channel (love.thread.getChannel "dunst")]
+          (if (channel:peek)
+            (let [block-config config.block.dunst 
+                  channel (love.thread.getChannel "dunst")
+                  dunst (channel:pop)
+                  content (.. block-config.label dunst)
+                  width (if block-config.auto-fit
+                          (text-to-width block-config content block-config.padding-x)
+                          block-config.width)
+                  height (if block-config.auto-fit
+                           (text-to-height block-config content block-config.margin)
+                           block-config.height)]
+              (when dunst
+                (set blocks-state-dunst {:dunst dunst :content content :width width :height height}))
+              (bar-print bar content width height direction block-config))
+            (if blocks-state-dunst.content
+              (bar-print bar blocks-state-dunst.content blocks-state-dunst.width blocks-state-dunst.height direction config.block.dunst)
               bar))))})
 
 (var blocks-state-memory {})
