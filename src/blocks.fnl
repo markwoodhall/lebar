@@ -397,10 +397,10 @@
         bar)
       :draw 
       (fn [bar direction]
-        (let [channel (love.thread.getChannel "i3bs")]
+        (let [channel (love.thread.getChannel "i3bs")
+              block-config config.block.i3-binding-state]
           (if (channel:peek)
-            (let [block-config config.block.i3-binding-state
-                  ws (channel:pop)
+            (let [ws (channel:pop)
                   content (.. block-config.label ws)
                   width (if config.block.i3-binding-state.auto-fit
                             (text-to-width config.block.i3-binding-state content config.block.i3-binding-state.padding-x)
@@ -412,7 +412,16 @@
                 (set blocks-state-i3-binding-state {:i3-binding-state ws :content content :width width :height height}))
               (bar-print bar content width height direction block-config))
             (if blocks-state-i3-binding-state.content
-              (bar-print bar blocks-state-i3-binding-state.content blocks-state-i3-binding-state.width blocks-state-i3-binding-state.height direction config.block.i3-binding-state)
+              (let [fg block-config.foreground-color
+                    bg block-config.background-color]
+                (if (not= blocks-state-i3-binding-state.i3-binding-state "default")
+                  (do 
+                    (set block-config.foreground-color bg)
+                    (set block-config.background-color fg))
+                  (do 
+                    (set block-config.foreground-color config.block.i3-binding-state.foreground-color)
+                    (set block-config.background-color config.block.i3-binding-state.background-color)))
+                (bar-print bar blocks-state-i3-binding-state.content blocks-state-i3-binding-state.width blocks-state-i3-binding-state.height direction block-config))
               bar))))})
 
 (var blocks-state-dunst {})
