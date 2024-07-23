@@ -1,12 +1,12 @@
 (local blocks {})
 
-(fn text-to-width [block-config text _margin]
+(fn text-to-width [block-config text]
   "Given some text to be rendered, try to calculate an appropriate width for the block"
   (let [font block-config.love-font
         width (font:getWidth text)]
     width))
 
-(fn text-to-height [block-config text _margin]
+(fn text-to-height [block-config text]
   "Given some text to be rendered, try to calculate an appropriate height for the block"
   (let [font block-config.love-font
         height (font:getHeight text)]
@@ -69,14 +69,15 @@
 
 (set blocks.separator
      (fn [bar direction config]
-       (let [content config.block.separator.text
-             width (if config.block.separator.auto-fit
-                     (text-to-width config.block.separator content config.block.separator.padding-x)
-                     config.block.separator.width)
-             height (if config.block.separator.auto-fit
-                      (text-to-height config.block.separator content config.block.separator.margin)
-                      config.block.separator.height)]
-         (bar-print bar content width height direction config.block.separator))))
+       (let [block-config config.block.separator
+             content block-config.text
+             width (if block-config.auto-fit
+                     (text-to-width block-config content)
+                     block-config.width)
+             height (if block-config.auto-fit
+                      (text-to-height block-config content)
+                      block-config.height)]
+         (bar-print bar content width height direction block-config))))
 
 (var blocks-state-time {})
 (set blocks.time
@@ -89,22 +90,22 @@
         bar)
       :draw 
       (fn [bar direction config]
-        (let [channel (love.thread.getChannel "time")]
-          (if (: channel :peek)
-            (let [time (: channel :pop)
+        (let [block-config config.block.time
+              channel (love.thread.getChannel "time")]
+          (if (channel:peek)
+            (let [time (channel:pop)
                   content (.. " " time)
-                  width (if config.block.time.auto-fit
-                          (text-to-width config.block.time content config.block.time.padding-x)
-                          config.block.time.width)
-                  height (if config.block.time.auto-fit
-                           (text-to-height config.block.time content config.block.time.margin)
-                           config.block.time.height)
-                  block-config config.block.time]
+                  width (if block-config.auto-fit
+                          (text-to-width block-config content)
+                          block-config.width)
+                  height (if block-config.auto-fit
+                           (text-to-height block-config content)
+                           block-config.height)]
               (when time
                 (set blocks-state-time {:time time :content content :width width :height height}))
               (bar-print bar content width height direction block-config))
             (if blocks-state-time.content
-              (bar-print bar blocks-state-time.content blocks-state-time.width blocks-state-time.height direction config.block.time)
+              (bar-print bar blocks-state-time.content blocks-state-time.width blocks-state-time.height direction block-config)
               bar))))})
 
 (fn expand-bar [col bar direction block-config content-fn config-fn config]
@@ -112,10 +113,10 @@
                _ n (ipairs col)]
     (let [content (content-fn n)
           width (if block-config.auto-fit
-                  (text-to-width block-config content block-config.padding-x)
+                  (text-to-width block-config content)
                   block-config.width)
           height (if block-config.auto-fit
-                   (text-to-height block-config content block-config.margin)
+                   (text-to-height block-config content)
                    block-config.height)]
       (config-fn n block-config)
       (let [new-bar (bar-print b content width height direction block-config)]
@@ -133,6 +134,7 @@
       (fn [bar direction config]
         (let [channel (love.thread.getChannel "i3ws")
               content-fn (fn [i] (. i :name))
+              block-config config.block.i3-workspace
               config-fn 
               (fn [i block-config] 
                 (let [focused (. i :focused)]
@@ -143,20 +145,18 @@
                     (do
                       (set block-config.foreground-color config.theme.black)
                       (set block-config.background-color config.theme.gray)))))]
-          (set config.block.i3-workspace.foreground-color config.theme.black)
-          (set config.block.i3-workspace.background-color config.theme.green)
+          (set block-config.foreground-color config.theme.black)
+          (set block-config.background-color config.theme.green)
           (if (channel:peek)
             (let [ws (channel:pop)
                   workspaces (icollect [v (ws:gmatch "[^,]+")]
                                (let [t (v:gmatch "[^%-]+")]
-                                 {:name (t) :focused (= (t) "true")}))
-
-                  block-config config.block.i3-workspace]
+                                 {:name (t) :focused (= (t) "true")}))]
               (when ws
                 (set blocks-state-i3-workspace {:i3-workspace ws :workspaces workspaces}))
               (expand-bar workspaces bar direction block-config content-fn config-fn config))
             (if blocks-state-i3-workspace.workspaces
-              (expand-bar blocks-state-i3-workspace.workspaces bar direction config.block.i3-workspace content-fn config-fn config)
+              (expand-bar blocks-state-i3-workspace.workspaces bar direction block-config content-fn config-fn config)
               bar))))})
 
 (var blocks-state-i3-binding-state {})
@@ -171,10 +171,10 @@
           (if (channel:peek)
             (let [ws (channel:pop)
                   content (.. block-config.label ws)
-                  width (if config.block.i3-binding-state.auto-fit
-                            (text-to-width config.block.i3-binding-state content config.block.i3-binding-state.padding-x)
-                            config.block.i3-binding-state.width)
-                  height (if config.block.i3-binding-state.auto-fit
+                  width (if block-config.auto-fit
+                            (text-to-width block-config content)
+                            block-config.width)
+                  height (if block-config.auto-fit
                            (text-to-height config.block.i3-binding-state content config.block.i3-binding-state.margin)
                            config.block.i3-binding-state.height)]
               (when ws
@@ -203,23 +203,24 @@
         bar)
       :draw 
       (fn [bar direction config]
-        (let [channel (love.thread.getChannel "dunst")]
+        (let [block-config config.block.dunst
+              channel (love.thread.getChannel "dunst")]
           (if (channel:peek)
-            (let [block-config config.block.dunst 
+            (let [
                   channel (love.thread.getChannel "dunst")
                   dunst (channel:pop)
                   content (.. block-config.label dunst)
                   width (if block-config.auto-fit
-                          (text-to-width block-config content block-config.padding-x)
+                          (text-to-width block-config content)
                           block-config.width)
                   height (if block-config.auto-fit
-                           (text-to-height block-config content block-config.margin)
+                           (text-to-height block-config content)
                            block-config.height)]
               (when dunst
                 (set blocks-state-dunst {:dunst dunst :content content :width width :height height}))
               (bar-print bar content width height direction block-config))
             (if blocks-state-dunst.content
-              (bar-print bar blocks-state-dunst.content blocks-state-dunst.width blocks-state-dunst.height direction config.block.dunst)
+              (bar-print bar blocks-state-dunst.content blocks-state-dunst.width blocks-state-dunst.height direction block-config)
               bar))))})
 
 (var blocks-state-memory {})
@@ -232,23 +233,23 @@
         bar)
       :draw 
       (fn [bar direction config]
-        (let [channel (love.thread.getChannel "memory")]
+        (let [channel (love.thread.getChannel "memory")
+              block-config config.block.memory]
           (if (channel:peek)
-            (let [block-config config.block.memory 
-                  channel (love.thread.getChannel "memory")
+            (let [channel (love.thread.getChannel "memory")
                   memory (channel:pop)
                   content (.. block-config.label memory)
                   width (if block-config.auto-fit
-                          (text-to-width block-config content block-config.padding-x)
+                          (text-to-width block-config content)
                           block-config.width)
                   height (if block-config.auto-fit
-                           (text-to-height block-config content block-config.margin)
+                           (text-to-height block-config content)
                            block-config.height)]
               (when memory
                 (set blocks-state-memory {:memory memory :content content :width width :height height}))
               (bar-print bar content width height direction block-config))
             (if blocks-state-memory.content
-              (bar-print bar blocks-state-memory.content blocks-state-memory.width blocks-state-memory.height direction config.block.memory)
+              (bar-print bar blocks-state-memory.content blocks-state-memory.width blocks-state-memory.height direction block-config)
               bar))))})
 
 (var blocks-state-user {})
@@ -261,23 +262,23 @@
         bar)
       :draw 
       (fn [bar direction config]
-        (let [channel (love.thread.getChannel "user")]
+        (let [block-config config.block.user 
+              channel (love.thread.getChannel "user")]
           (if (channel:peek)
-            (let [block-config config.block.user 
-                  channel (love.thread.getChannel "user")
+            (let [channel (love.thread.getChannel "user")
                   user (channel:pop)
                   content (.. block-config.label user)
                   width (if block-config.auto-fit
-                          (text-to-width block-config content block-config.padding-x)
+                          (text-to-width block-config content)
                           block-config.width)
                   height (if block-config.auto-fit
-                           (text-to-height block-config content block-config.margin)
+                           (text-to-height block-config content)
                            block-config.height)]
               (when user
                 (set blocks-state-user {:user user :content content :width width :height height}))
               (bar-print bar content width height direction block-config))
             (if blocks-state-user.content
-              (bar-print bar blocks-state-user.content blocks-state-user.width blocks-state-user.height direction config.block.user)
+              (bar-print bar blocks-state-user.content blocks-state-user.width blocks-state-user.height direction block-config)
               bar))))})
 
 (var blocks-state-power {})
@@ -290,9 +291,10 @@
         bar)
       :draw 
       (fn [bar direction config]
-        (let [channel (love.thread.getChannel "power")]
-          (if (: channel :peek)
-            (let [power (: channel :pop)
+        (let [block-config config.block.power
+              channel (love.thread.getChannel "power")]
+          (if (channel:peek)
+            (let [power (channel:pop)
                   [state percent hours] (if power power ["nobattery" nil])
                   content (.. state (if percent (.. " " percent "%") ""))
                   content (case state
@@ -308,15 +310,18 @@
                             "charged" (.. "" (if percent (.. " " percent "%") ""))
                             "nobattery" (.. "" " AC")
                             _ content)
-                  remaining (if (and config.block.power.include-remaining-time (not= state "nobattery")) (.. " " (string.format "%.2f" hours) "(h)") "")
+                  remaining (if (and block-config.include-remaining-time 
+                                     (not= state "charging")
+                                     (not= state "nobattery")) 
+                              (.. " " (string.format "%.2f" hours) "(h)")
+                              "")
                   content (if hours (.. content  remaining) content)
                   width (if config.block.power.auto-fit
-                          (text-to-width config.block.power content config.block.power.padding-x)
-                          config.block.power.width)
+                          (text-to-width block-config content)
+                          block-config.width)
                   height (if config.block.power.auto-fit
-                           (text-to-height config.block.power content config.block.power.margin)
-                           config.block.power.height)
-                  block-config config.block.power]
+                           (text-to-height block-config content)
+                           block-config.height)]
               (when (= state "battery")
                 (case percent
                   (where p (<= p 50 )) 
@@ -329,7 +334,7 @@
                 (set blocks-state-power {:power power :content content :width width :height height}))
               (bar-print bar content width height direction block-config))
             (if blocks-state-power.content
-              (bar-print bar blocks-state-power.content blocks-state-power.width blocks-state-power.height direction config.block.power)
+              (bar-print bar blocks-state-power.content blocks-state-power.width blocks-state-power.height direction block-config)
               bar))))})
 
 (var blocks-state-pacman {})
@@ -342,17 +347,17 @@
         bar)
       :draw 
       (fn [bar direction config]
-        (let [channel (love.thread.getChannel "pacman")]
+        (let [block-config config.block.pacman
+              channel (love.thread.getChannel "pacman")]
           (if (channel:peek)
-            (let [block-config config.block.pacman
-                  pacman (channel:pop)
+            (let [pacman (channel:pop)
                   content (.. block-config.label (..  pacman " update(s)"))
-                  width (if config.block.pacman.auto-fit
-                          (text-to-width config.block.pacman content config.block.pacman.padding-x)
-                          config.block.pacman.width)
-                  height (if config.block.pacman.auto-fit
-                           (text-to-height config.block.pacman content config.block.pacman.margin)
-                           config.block.pacman.height)]
+                  width (if block-config.auto-fit
+                          (text-to-width block-config content)
+                          block-config.width)
+                  height (if block-config.auto-fit
+                           (text-to-height block-config content)
+                           block-config.height)]
               (case (tonumber pacman)
                 (where p (<= p 50)) (set block-config.foreground-color config.theme.green)
                 (where p (<= p 100)) (set block-config.foreground-color config.theme.yellow)
@@ -361,7 +366,7 @@
                 (set blocks-state-pacman {:pacman pacman :content content :width width :height height}))
               (bar-print bar content width height direction block-config))
             (if blocks-state-pacman.content
-              (bar-print bar blocks-state-pacman.content blocks-state-pacman.width blocks-state-pacman.height direction config.block.pacman)
+              (bar-print bar blocks-state-pacman.content blocks-state-pacman.width blocks-state-pacman.height direction block-config)
               bar))))})
 
 (fn thread-shell-command [command]
@@ -381,13 +386,13 @@
       (fn [bar direction config]
         (let [block-config config.block.cpu 
               channel (love.thread.getChannel "cpu")
-              cpu-percentage (: channel :pop)
+              cpu-percentage (channel:pop)
               content (.. block-config.label (or cpu-percentage blocks-state-cpu-last) "%")
               width (if block-config.auto-fit
-                      (text-to-width block-config content block-config.padding-x)
+                      (text-to-width block-config content)
                       block-config.width)
               height (if block-config.auto-fit
-                       (text-to-height block-config content block-config.margin)
+                       (text-to-height block-config content)
                        block-config.height)]
           (when (and cpu-percentage (tonumber cpu-percentage))
             (if (> (tonumber cpu-percentage) block-config.ok-threshold)
@@ -411,28 +416,30 @@
         bar)
       :draw 
       (fn [bar direction config]
-        (let [channel (love.thread.getChannel "window-title")]
-          (if (: channel :peek)
-            (let [window-title (: channel :pop)
+        (let [block-config config.block.window-title
+              channel (love.thread.getChannel "window-title")]
+          (if (channel:peek)
+            (let [window-title (channel:pop)
                   content (.. window-title)
-                  width (if config.block.window-title.auto-fit
-                          (text-to-width config.block.window-title content config.block.window-title.padding-x)
-                          config.block.window-title.width)
-                  height (if config.block.window-title.auto-fit
-                           (text-to-height config.block.window-title content config.block.window-title.margin)
-                           config.block.window-title.height)
-                  block-config config.block.window-title]
+                  width (if block-config.auto-fit
+                          (text-to-width block-config content)
+                          block-config.width)
+                  height (if block-config.auto-fit
+                           (text-to-height block-config content)
+                           block-config.height)]
               (when window-title
                 (set blocks-state-window-title {:window-title window-title :content content :width width :height height}))
               (bar-print bar content width height direction block-config))
             (if blocks-state-window-title.content
-              (bar-print bar blocks-state-window-title.content blocks-state-window-title.width blocks-state-window-title.height direction config.block.window-title)
+              (bar-print bar blocks-state-window-title.content blocks-state-window-title.width blocks-state-window-title.height direction block-config)
               bar))))})
 
 (var blocks-state-free-disk-space {})
+;; Setting here to supress fennel-ls warning
+(set blocks-state-free-disk-space {})
 (set blocks.free-disk-space
      {:load
-      (fn [mount id bar _direction config]
+      (fn [mount id bar _direction _config]
         (local free-disk-space (love.filesystem.read "disk.fnl"))
         (local (with-id _) (string.gsub free-disk-space "blocks%.config%.block%.free%-disk%-space%.id" id))
         (local (with-mount _) (string.gsub with-id "blocks%.config%.block%.free%-disk%-space%.mount" mount))
@@ -442,23 +449,23 @@
         bar)
       :draw 
       (fn [mount id label bar direction config]
-        (let [channel (love.thread.getChannel (.. mount ".disk"))]
+        (let [block-config config.block.free-disk-space 
+              channel (love.thread.getChannel (.. mount ".disk"))]
           (if (channel:peek)
-            (let [block-config config.block.free-disk-space 
-                  free-disk-space (channel:pop)
+            (let [free-disk-space (channel:pop)
                   content (.. (if label label block-config.label) free-disk-space)
                   width (if block-config.auto-fit
-                          (text-to-width block-config content block-config.padding-x)
+                          (text-to-width block-config content)
                           block-config.width)
                   height (if block-config.auto-fit
-                           (text-to-height block-config content block-config.margin)
+                           (text-to-height block-config content)
                            block-config.height)]
               (when free-disk-space
                 (tset blocks-state-free-disk-space id {:free-disk-space free-disk-space :content content :width width :height height}))
               (bar-print bar content width height direction block-config))
             (if (. (. blocks-state-free-disk-space id) :content)
               (let [state (. blocks-state-free-disk-space id)]
-                (bar-print bar state.content state.width state.height direction config.block.free-disk-space))
+                (bar-print bar state.content state.width state.height direction block-config))
               bar))))})
 
 blocks
