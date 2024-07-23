@@ -5,6 +5,7 @@ VERSION = 0.1
 # Source and output directories
 SRC_DIR = src
 BUILD_DIR = build
+INSTALL_DIR = /opt/lebar/
 
 # .love file and shell script
 LOVE_FILE = $(BUILD_DIR)/$(PROJECT_NAME).love
@@ -61,5 +62,11 @@ clean:
 	@echo "Cleaning up..."
 	@rm -rf $(BUILD_DIR)
 
+# Install target
+install:
+	@echo "Installing.."
+	@mkdir -p $(INSTALL_DIR)
+	@cp -r $(BUILD_DIR) $(INSTALL_DIR)
+
 # Phony targets
-.PHONY: all clean
+.PHONY: all clean install
