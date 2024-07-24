@@ -12,58 +12,61 @@
         height (font:getHeight text)]
     height))
 
+(fn print-left [bar block-config renderable-width width height content]
+  (love.graphics.setColor block-config.background-color)
+  (love.graphics.rectangle 
+    "fill" 
+    renderable-width 
+    block-config.margin 
+    (+ block-config.padding-x 
+       block-config.padding-x 
+       width) 
+    (+ (/ block-config.radius 2) height)
+    block-config.radius 
+    block-config.radius)
+  (love.graphics.setColor block-config.foreground-color)
+  (love.graphics.print 
+    content
+    (+ renderable-width block-config.padding-x) 
+    block-config.margin)
+  (set bar.renderable-width-left 
+       (+ renderable-width 
+          (+ block-config.padding-x 
+             block-config.padding-x 
+             width))))
+
+(fn print-right [bar block-config renderable-width width height content]
+  (love.graphics.setColor block-config.background-color)
+  (love.graphics.rectangle 
+    "fill" 
+    (- renderable-width 
+       width 
+       block-config.padding-x) 
+    block-config.margin 
+    (+ block-config.padding-x 
+       block-config.padding-x 
+       width) 
+    (+ (/ block-config.radius 2) height)
+    block-config.radius
+    block-config.radius)
+  (love.graphics.setColor block-config.foreground-color)
+  (love.graphics.print 
+    content
+    (- renderable-width width) 
+    block-config.margin)
+  (set bar.renderable-width-right 
+       (- renderable-width 
+          (+ block-config.padding-x 
+             block-config.padding-x 
+             width))))
+
 (fn bar-print [bar content width height direction block-config]
   (let [renderable-width-right (. bar :renderable-width-right)
         renderable-width-left (. bar :renderable-width-left)]
     (love.graphics.setFont block-config.love-font)
     (case direction
-      :right (do 
-               (love.graphics.setColor block-config.background-color)
-               (love.graphics.rectangle 
-                 "fill" 
-                 (- renderable-width-right 
-                    width 
-                    block-config.padding-x) 
-                 block-config.margin 
-                 (+ block-config.padding-x 
-                    block-config.padding-x 
-                    width) 
-                 (+ (/ block-config.radius 2) height)
-                 block-config.radius
-                 block-config.radius)
-               (love.graphics.setColor block-config.foreground-color)
-               (love.graphics.print 
-                 content
-                 (- renderable-width-right width) 
-                 block-config.margin)
-               (set bar.renderable-width-right 
-                    (- renderable-width-right 
-                       (+ block-config.padding-x 
-                          block-config.padding-x 
-                          width))))
-      :left (do 
-               (love.graphics.setColor block-config.background-color)
-               (love.graphics.rectangle 
-                 "fill" 
-                 renderable-width-left 
-                 block-config.margin 
-                 (+ block-config.padding-x 
-                    block-config.padding-x 
-                    width) 
-                 (+ (/ block-config.radius 2) height)
-                 block-config.radius 
-                 block-config.radius)
-               (love.graphics.setColor block-config.foreground-color)
-               (love.graphics.print 
-                 content
-                 (+ renderable-width-left block-config.padding-x) 
-                 block-config.margin)
-               (set bar.renderable-width-left 
-                    (+ renderable-width-left 
-                       (+ block-config.padding-x 
-                          block-config.padding-x 
-                          width)))))
-
+      :right (print-right bar block-config renderable-width-right width height content)
+      :left (print-left bar block-config renderable-width-left width height content))
     (love.graphics.setFont block-config.love-font)
     bar))
 
