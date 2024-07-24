@@ -44,7 +44,7 @@ $(SCRIPT_FILE): $(LOVE_FILE)
 	@echo 'LOVE_EXECUTABLE="$(LOVE_EXECUTABLE)"' >> $(SCRIPT_FILE)
 	@echo '' >> $(SCRIPT_FILE)
 	@echo '# Path to the .love file' >> $(SCRIPT_FILE)
-	@echo 'GAME_FILE="$(PROJECT_NAME)".love' >> $(SCRIPT_FILE)
+	@echo 'GAME_FILE="$(INSTALL_DIR)$(PROJECT_NAME)".love' >> $(SCRIPT_FILE)
 	@echo '' >> $(SCRIPT_FILE)
 	@echo '# Check if LÖVE is installed' >> $(SCRIPT_FILE)
 	@echo 'if command -v love &> /dev/null' >> $(SCRIPT_FILE)
@@ -66,7 +66,7 @@ clean:
 install:
 	@echo "Installing.."
 	@mkdir -p $(INSTALL_DIR)
-	@cp -r $(BUILD_DIR) $(INSTALL_DIR)
+	@cp -r $(BUILD_DIR)/* $(INSTALL_DIR)
 
 # Phony targets
 .PHONY: all clean install

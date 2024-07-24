@@ -1,7 +1,6 @@
 #!/bin/bash
 # The application to run as a dock
-cd /home/markwoodhall/src/mark/lebar/build
-APPLICATION="./lebar"  # Replace this with the command to run your application
+APPLICATION="/opt/lebar/lebar"  # Replace this with the command to run your application
 # Launch the application in the background
 $APPLICATION &
 # Get the PID of the application

@@ -1,8 +1,7 @@
 (require "love.timer")
 (var last-result "")
 (while true
-  (os.execute "echo \"$(whoami)@$(cat /etc/hostname)\" > lebar-user")
-  (let [file (io.open "lebar-user" "r")
+  (let [file (io.popen "echo \"$(whoami)@$(cat /etc/hostname)\"")
         result (if file (file:read "*a") last-result)
         draw-channel (love.thread.getChannel "draw")
         channel (love.thread.getChannel "user")

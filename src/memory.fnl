@@ -1,8 +1,7 @@
 (require "love.timer")
 (var last-result "")
 (while true
-  (os.execute "free | awk '/^Mem/ { printf(\"%.0f%\", $3/$2 * 100.0) }' > lebar-memory")
-  (let [file (io.open "lebar-memory" "r")
+  (let [file (io.popen "free | awk '/^Mem/ { printf(\"%.0f%\", $3/$2 * 100.0) }'")
         result (if file (file:read "*a") last-result)
         draw-channel (love.thread.getChannel "draw")
         channel (love.thread.getChannel "memory")

@@ -167,7 +167,9 @@
       :draw 
       (fn [bar direction config]
         (let [channel (love.thread.getChannel "i3bs")
-              block-config config.block.i3-binding-state]
+              block-config config.block.i3-binding-state
+              original-bg block-config.background-color
+              original-fg block-config.foreground-color]
           (if (channel:peek)
             (let [ws (channel:pop)
                   content (.. block-config.label ws)
@@ -179,6 +181,8 @@
                            config.block.i3-binding-state.height)]
               (when ws
                 (set blocks-state-i3-binding-state {:i3-binding-state ws :content content :width width :height height}))
+              (set block-config.foreground-color original-fg)
+              (set block-config.background-color original-bg)
               (bar-print bar content width height direction block-config))
             (if blocks-state-i3-binding-state.content
               (let [fg block-config.foreground-color
@@ -188,9 +192,11 @@
                     (set block-config.foreground-color bg)
                     (set block-config.background-color fg))
                   (do 
-                    (set block-config.foreground-color config.block.i3-binding-state.foreground-color)
-                    (set block-config.background-color config.block.i3-binding-state.background-color)))
+                    (set block-config.foreground-color original-fg)
+                    (set block-config.background-color original-bg)))
                 (bar-print bar blocks-state-i3-binding-state.content blocks-state-i3-binding-state.width blocks-state-i3-binding-state.height direction block-config))
+              (set block-config.foreground-color original-fg)
+              (set block-config.background-color original-bg)
               bar))))})
 
 (var blocks-state-dunst {})

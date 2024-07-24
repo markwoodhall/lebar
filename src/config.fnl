@@ -273,8 +273,10 @@
        (when (= (hostname) "thinker")
          {:load (partial (. blocks.free-disk-space :load) "/home" "data")
           :draw (partial (. blocks.free-disk-space :draw) "/home" "data" "/home ")})
-       (when (= (hostname) "thinker")
-         blocks.separator)
+       (when (= (hostname) "archy")
+         {:load (partial (. blocks.free-disk-space :load) "/mnt/data" "data")
+          :draw (partial (. blocks.free-disk-space :draw) "/mnt/data" "data" "DATA ")})
+       blocks.separator
        blocks.dunst
        blocks.separator
        blocks.pacman]})

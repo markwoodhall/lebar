@@ -3,8 +3,7 @@
 (require "love.timer")
 (var last-result "")
 (while true
-  (os.execute "dunstctl history | jq '.data[].[] | (.appname.data + \" - \" + .summary.data)' | head -n 1 > lebar-dunst")
-  (let [file (io.open "lebar-dunst" "r")
+  (let [file (io.popen "dunstctl history | jq '.data[].[] | (.appname.data + \" - \" + .summary.data)' | head -n 1")
         result (if file (file:read "*a") last-result)
         draw-channel (love.thread.getChannel "draw")
         channel (love.thread.getChannel "dunst")

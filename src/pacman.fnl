@@ -1,8 +1,8 @@
 (require "love.timer")
 (var last-result "")
 (while true
-  (os.execute "checkupdates | wc -l > lebar-pacman")
-  (let [file (io.open "lebar-pacman" "r")
+  (os.execute "")
+  (let [file (io.popen "checkupdates | wc -l")
         result (if file (file:read "*a") last-result)
         draw-channel (love.thread.getChannel "draw")
         channel (love.thread.getChannel "pacman")
