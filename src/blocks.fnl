@@ -125,6 +125,43 @@
       (let [new-bar (bar-print b content width height direction block-config)]
         (blocks.separator new-bar direction config)))))
 
+(var blocks-state-wmctrl {})
+(set blocks.wmctrl
+     {:load
+      (fn [bar _direction _config]
+        (local i3 (love.filesystem.read "wmctrl.fnl"))
+        (local luas (fennel.compile-string i3))
+        (blocks.thread-shell-command luas)
+        bar)
+      :draw 
+      (fn [bar direction config]
+        (let [channel (love.thread.getChannel "wmctrl")
+              content-fn (fn [i] (. i :name))
+              block-config config.block.wmctrl
+              config-fn 
+              (fn [i block-config] 
+                (let [focused (. i :focused)]
+                  (if focused
+                    (do
+                      (set block-config.foreground-color config.theme.black)
+                      (set block-config.background-color config.theme.green))
+                    (do
+                      (set block-config.foreground-color config.theme.black)
+                      (set block-config.background-color config.theme.gray)))))]
+          (set block-config.foreground-color config.theme.black)
+          (set block-config.background-color config.theme.green)
+          (if (channel:peek)
+            (let [ws (channel:pop)
+                  workspaces (icollect [v (ws:gmatch "[^,]+")]
+                               (let [t (v:gmatch "[^%s%s]+")]
+                                 {:name (+ (or (tonumber (t)) 0) 1) :focused (= (t) "*")}))]
+              (when ws
+                (set blocks-state-wmctrl {:wmctrl ws :workspaces workspaces}))
+              (expand-bar workspaces bar direction block-config content-fn config-fn config))
+            (if blocks-state-wmctrl.workspaces
+              (expand-bar blocks-state-wmctrl.workspaces bar direction block-config content-fn config-fn config)
+              bar))))})
+
 (var blocks-state-i3-workspace {})
 (set blocks.i3-workspace
      {:load

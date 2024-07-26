@@ -243,6 +243,21 @@
 (set config.block.i3-binding-state.background-color config.theme.purple)
 (set config.block.i3-binding-state.auto-fit config.block.defaults.auto-fit)
 
+; configuration for the wmctrl block
+(set config.block.wmctrl {})
+(set config.block.wmctrl.width config.block.defaults.width)
+(set config.block.wmctrl.height config.block.defaults.height)
+(set config.block.wmctrl.margin config.block.defaults.margin)
+(set config.block.wmctrl.padding-x config.block.defaults.padding-x)
+(set config.block.wmctrl.radius config.block.defaults.radius)
+(set config.block.wmctrl.label config.block.defaults.label)
+(set config.block.wmctrl.font config.block.defaults.font)
+(set config.block.wmctrl.font-size config.block.defaults.font-size)
+(set config.block.wmctrl.love-font (love.graphics.newFont config.block.wmctrl.font config.block.wmctrl.font-size))
+(set config.block.wmctrl.foreground-color config.theme.black)
+(set config.block.wmctrl.background-color config.theme.green)
+(set config.block.wmctrl.auto-fit config.block.defaults.auto-fit)
+
 (fn hostname []
   (let [f (io.popen "/bin/hostname")
         host (or (f:read "*a") "")
@@ -254,9 +269,10 @@
      {:left 
       [blocks.user
        blocks.separator
-       blocks.i3-workspace
-       blocks.i3-binding-state
-       blocks.separator
+       blocks.wmctrl
+       ;;blocks.i3-workspace
+       ;;blocks.i3-binding-state
+       ;; blocks.separator
        blocks.window-title]
       :right 
       [blocks.time 
@@ -276,8 +292,8 @@
        (when (= (hostname) "archy")
          {:load (partial (. blocks.free-disk-space :load) "/mnt/data" "data")
           :draw (partial (. blocks.free-disk-space :draw) "/mnt/data" "data" "DATA ")})
-       blocks.separator
-       blocks.dunst
+       ;;blocks.separator
+       ;;blocks.dunst
        blocks.separator
        blocks.pacman]})
 
