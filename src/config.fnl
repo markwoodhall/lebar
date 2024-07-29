@@ -3,17 +3,11 @@
 (local blocks (require "blocks.fnl"))
 (local themes (require "themes.fnl"))
 
-(set config.background-color 
-     [0.11764705882352941 0.12549019607843137 0.18823529411764706])
-
-(set config.foreground-color
-     [0.792156862745098  0.8274509803921568 0.9607843137254902])
-
 (set config.refresh-seconds 0.001)
 
 ;; When set to true this will cause the render loop to 
 ;; pause and wait for something to appear on the draw channel
-;; When set to false the render loop will onlu pause based on
+;; When set to false the render loop will only pause based on
 ;; config.refresh-seconds
 (set config.render-on-change true)
 
@@ -24,15 +18,17 @@
 (set config.window {})
 (set config.window.position :top)
 (set config.window.margin 4)
-(set config.window.height 29)
+(set config.window.height 27)
 
 ; set the theme
 (set config.theme themes.catppuccin)
+(set config.background-color config.theme.black)
+(set config.foreground-color config.theme.text)
 
 ; default configuration for blocks
 (set config.block {})
 (set config.block.defaults {})
-(set config.block.defaults.margin 5)
+(set config.block.defaults.margin 3)
 (set config.block.defaults.padding-x 3)
 (set config.block.defaults.width 140)
 (set config.block.defaults.height 20)
@@ -40,7 +36,7 @@
 (set config.block.defaults.label "")
 (set config.block.defaults.font "JetBrainsMonoNerdFont-Regular.ttf")
 (set config.block.defaults.font-size 14)
-(set config.block.defaults.radius 4)
+(set config.block.defaults.radius 6)
 (set config.block.defaults.love-font (love.graphics.newFont config.block.defaults.font config.block.defaults.font-size))
 (set config.block.defaults.background-color config.theme.black)
 (set config.block.defaults.foreground-color config.theme.text)
@@ -247,9 +243,9 @@
 (set config.block.wmctrl {})
 (set config.block.wmctrl.width config.block.defaults.width)
 (set config.block.wmctrl.height config.block.defaults.height)
-(set config.block.wmctrl.margin config.block.defaults.margin)
+(set config.block.wmctrl.margin (+ config.block.defaults.margin 1))
 (set config.block.wmctrl.padding-x config.block.defaults.padding-x)
-(set config.block.wmctrl.radius config.block.defaults.radius)
+(set config.block.wmctrl.radius 4)
 (set config.block.wmctrl.label config.block.defaults.label)
 (set config.block.wmctrl.font config.block.defaults.font)
 (set config.block.wmctrl.font-size config.block.defaults.font-size)
