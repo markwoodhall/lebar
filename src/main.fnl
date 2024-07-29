@@ -32,6 +32,7 @@
     (when love.timer (love.timer.sleep 0.001))))	
 
 (fn love.load []
+  (love.window.setDisplaySleepEnabled true) 
   (love.graphics.setFont (love.graphics.newFont config.font config.font-size))
   (set bar (window.place-window config.window))
   (set bar (renderer.load-bar bar)))
