@@ -1,8 +1,7 @@
 (local renderer {})
-(local config (require "config.fnl"))
 
-(fn render-block [bar block direction cfg]
-  (local (ok result) (pcall (fn [] (block bar direction cfg))))
+(fn render-block [bar block direction config]
+  (local (ok result) (pcall (fn [] (block bar direction config))))
   (if ok
     result
     (do
@@ -10,7 +9,7 @@
       bar)))
 
 (set renderer.load-bar
-     (fn [bar] 
+     (fn [bar config] 
        (var l-bar bar)
        (each [_ value (pairs (. config.blocks :left))]
          (when (not= (type value) "function")
@@ -21,7 +20,7 @@
        l-bar))
 
 (set renderer.render-bar
-     (fn [bar] 
+     (fn [bar config] 
        (var l-bar bar)
        (set l-bar.renderable-width-right (- (. l-bar :width) config.window.margin config.window.margin))
        (set l-bar.renderable-width-left config.window.margin)

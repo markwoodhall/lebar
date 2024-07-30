@@ -1,13 +1,6 @@
-(local os (require :os))
-(local config (require "config.fnl"))
 (local window (require "window.fnl"))
 (local renderer (require "renderer.fnl"))
-
-(fn love.handlers.stdin [line]
-  ;; evaluate lines read from stdin as fennel code
-  (if (= line "quit") (os.exit)
-    (let [(ok val) (pcall fennel.eval line)]
-      (print (if ok (fennel.view val) val)))))
+(local fennel (require "fennel"))
 
 (var bar {})
 
@@ -31,14 +24,22 @@
       (love.graphics.present))
     (when love.timer (love.timer.sleep 0.001))))	
 
+(fn get-config []
+  (let [user-config (love.filesystem.read "rc.fnl")]
+    (if user-config
+      (fennel.eval user-config)
+      (require "config.fnl"))))
+
 (fn love.load []
-  (love.window.setDisplaySleepEnabled true) 
-  (love.graphics.setFont (love.graphics.newFont config.font config.font-size))
-  (set bar (window.place-window config.window))
-  (set bar (renderer.load-bar bar)))
+  (let [config (get-config)]
+    (love.window.setDisplaySleepEnabled true) 
+    (love.graphics.setFont (love.graphics.newFont config.font config.font-size))
+    (set bar (window.place-window config.window))
+    (set bar (renderer.load-bar bar config))))
 
 (fn love.draw []
-  (let [bg config.background-color
+  (let [config (get-config)
+        bg config.background-color
         fg config.foreground-color
         channel (love.thread.getChannel "draw")]
     (love.graphics.clear bg)
@@ -48,13 +49,11 @@
         ;; clear the channel draw will run anyway now
         ;; and we don't need to draw again until something else changes
         ;; (channel:clear)
-        (set bar (renderer.render-bar bar)))
-      (set bar (renderer.render-bar bar)))
+        (set bar (renderer.render-bar bar config)))
+      (set bar (renderer.render-bar bar config)))
     (channel:clear)
     (love.timer.sleep config.refresh-seconds))
   (collectgarbage "collect"))
-
-(fn love.keypressed [_key])
 
 (fn love.threaderror [thread errorstr]
   (print "Thread error!\n" errorstr)
