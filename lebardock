@@ -1,47 +1,39 @@
 #!/bin/bash
-# The application to run as a dock
-APPLICATION="/opt/lebar/lebar"  # Replace this with the command to run your application
-# Launch the application in the background
-$APPLICATION &
-# Get the PID of the application
-APP_PID=$!
-# Wait a moment to ensure the application has started
-sleep 2
-# Get the window ID of the application using the PID
-APP_WINDOW_ID=$(xdotool search --name 'LEBAR_WM_TB' | head -n 1)
-HEX_ID=$(xdotool search --name 'LEBAR_WM_TB' | head -n 1 | xargs -I{} printf '0x%x' {})
-xdotool set_window --overrideredirect 1 $HEX_ID
-xdotool windowunmap $HEX_ID
-xdotool windowmap $HEX_ID
 
-# Check if we found a window ID
-if [ -z "$APP_WINDOW_ID" ]; then
-  echo "No window found for PID $APP_PID. Exiting."
-  exit 1
-fi
-# Set the window type to DOCK
-xprop -id $APP_WINDOW_ID -f _NET_WM_WINDOW_TYPE 32a -set _NET_WM_WINDOW_TYPE "_NET_WM_WINDOW_TYPE_DOCK"
-# Set the window state to STICKY and ABOVE
-xprop -id $APP_WINDOW_ID -f _NET_WM_STATE 32a -set _NET_WM_STATE "_NET_WM_STATE_STICKY, _NET_WM_STATE_SKIP_TASKBAR, _NET_WM_STATE_ABOVE"
-# Set the strut partial properties to reserve space
-# Adjust these values as needed for your specific dock size and position
+/opt/lebar/lebar &
+
+sleep 5  # Give the application some time to start
+
+WINDOW_ID=$(xdotool search --name 'LEBAR_WM_TB' | head -n 1)
+
+# Set window type to dock
+xprop -id $WINDOW_ID -f _NET_WM_WINDOW_TYPE 32a -set _NET_WM_WINDOW_TYPE "_NET_WM_WINDOW_TYPE_DOCK"
+
+# Set window to be on all workspaces and above other windows
+xprop -id $WINDOW_ID -f _NET_WM_STATE 32a -set _NET_WM_STATE "_NET_WM_STATE_ABOVE, _NET_WM_STATE_STICKY, _NET_WM_STATE_SKIP_TASKBAR, _NET_WM_STATE_SKIP_PAGER"
+
+xprop -id $WINDOW_ID -f _NET_WM_STATE 32a -set _NET_WM_STATE "_NET_WM_STATE_STICKY, _NET_WM_STATE_ABOVE, _NET_WM_STATE_SKIP_TASKBAR, _NET_WM_STATE_SKIP_PAGER, _NET_WM_STATE_BELOW"
+
+# Set the window to appear on all workspaces
+wmctrl -ir $WINDOW_ID -b add,sticky
+wmctrl -ir $WINDOW_ID -b add,above
+wmctrl -ir $WINDOW_ID -b add,skip_taskbar
+wmctrl -ir $WINDOW_ID -b add,skip_pager
+
+# Set the window to appear on all workspaces (set to -1)
+xprop -id $WINDOW_ID -f _NET_WM_DESKTOP 32c -set _NET_WM_DESKTOP "-1"
+
+# Set reserved space (modify values as needed)
 LEFT=0
 RIGHT=0
-TOP=50
-BOTTOM=0
-LEFT_START_Y=0
-LEFT_END_Y=0
-RIGHT_START_Y=0
-RIGHT_END_Y=0
-TOP_START_X=0
+TOP=27
+BOTTOM=0 
 TOP_END_X=$(xdpyinfo | awk '/dimensions:/ {print $2}' | cut -d 'x' -f 1)
-BOTTOM_START_X=0
-BOTTOM_END_X=0
-xprop -id $APP_WINDOW_ID -f _NET_WM_STRUT_PARTIAL 32c -set _NET_WM_STRUT_PARTIAL \
-"$LEFT, $RIGHT, $TOP, $BOTTOM, $LEFT_START_Y, $LEFT_END_Y, $RIGHT_START_Y, $RIGHT_END_Y, $TOP_START_X, $TOP_END_X, $BOTTOM_START_X, $BOTTOM_END_X"
-xprop -id $APP_WINDOW_ID -f _NET_WM_STRUT 32c -set _NET_WM_STRUT \
-"$LEFT, $RIGHT, $TOP, $BOTTOM"
-xprop -id $APP_WINDOW_ID -f _NET_WM_DESKTOP 32c -set _NET_WM_DESKTOP 0xFFFFFFFF
-echo "Window type and strut properties set for window ID $APP_WINDOW_ID."
-# Keep the script running as long as the application is running
-wait $APP_PID
+
+xprop -id $WINDOW_ID -f _NET_WM_STRUT_PARTIAL 32c -set _NET_WM_STRUT_PARTIAL \
+    "$LEFT, $RIGHT, $TOP, $BOTTOM, 0, 0, 0, 0, 0, $TOP_END_X, 0, 0"
+
+
+xprop -id $WINDOW_ID -f _NET_WM_STRUT 32c -set _NET_WM_STRUT "$LEFT, $RIGHT, $TOP, $BOTTOM"
+
+echo "Application launched and window properties set."
