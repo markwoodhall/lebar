@@ -3,7 +3,7 @@
 
 * Intro
 
-Lebar is a work in progress, proof of concept, system bar written in #+begin_src fennel
+Lebar is a work in progress, proof of concept, system bar written in fennel
 and compiled to lua. 
 
 ** LÖVE
