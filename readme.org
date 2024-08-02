@@ -6,6 +6,8 @@
 Lebar is a work in progress, proof of concept, system bar written in fennel
 and compiled to lua. 
 
+[[screenshot.png]]
+
 ** LÖVE
 
 Lebar is built using the LÖVE framework. This isn't an obvious choice for an application such as this, but
