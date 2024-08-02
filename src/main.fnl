@@ -75,4 +75,3 @@
     "escape" (love.event.quit))
   (let [dr (love.thread.getChannel "draw")]
     (dr:push true)))
-  
