@@ -261,7 +261,7 @@
     (f:close)
     host))
 
-(set config.blocks 
+(set config.all-blocks 
      {:left 
       [blocks.user
        blocks.separator
@@ -292,5 +292,13 @@
        ;;blocks.dunst
        blocks.separator
        blocks.pacman]})
+
+(set config.minimal-blocks 
+     {:left 
+      [blocks.user
+       blocks.window-title]
+      :right 
+      [blocks.time 
+       blocks.separator]})
 
 config

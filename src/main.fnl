@@ -3,6 +3,7 @@
 (local fennel (require "fennel"))
 
 (var bar {})
+(var minimal-mode false)
 
 (fn love.run []
   (when love.load (love.load (love.arg.parseGameArguments arg) arg))
@@ -25,10 +26,16 @@
     (when love.timer (love.timer.sleep 0.001))))	
 
 (fn get-config []
-  (let [user-config (love.filesystem.read "rc.fnl")]
-    (if user-config
-      (fennel.eval user-config)
-      (require "config.fnl"))))
+  (if minimal-mode
+    (let [conf (require "config.fnl")]
+      (set conf.blocks conf.minimal-blocks)
+      conf)
+    (let [user-config (love.filesystem.read "rc.fnl")
+          conf (if user-config
+                 (fennel.eval user-config)
+                 (require "config.fnl"))]
+      (set conf.blocks conf.all-blocks)
+      conf)))
 
 (fn love.load []
   (let [config (get-config)]
@@ -45,7 +52,7 @@
     (love.graphics.clear bg)
     (love.graphics.setColor fg)
     (if config.render-on-change 
-      (when (or (channel:demand))
+      (when (channel:demand)
         ;; clear the channel draw will run anyway now
         ;; and we don't need to draw again until something else changes
         ;; (channel:clear)
@@ -58,3 +65,14 @@
 (fn love.threaderror [thread errorstr]
   (print "Thread error!\n" errorstr)
   (print (thread:getError)))
+
+(fn set-minimal-mode []
+  (set minimal-mode (not minimal-mode)))
+
+(fn love.keypressed [_key]
+  (case _key
+    "m" (set-minimal-mode) 
+    "escape" (love.event.quit))
+  (let [dr (love.thread.getChannel "draw")]
+    (dr:push true)))
+  
