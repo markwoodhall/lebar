@@ -9,14 +9,12 @@ WINDOW_ID=$(xdotool search --name 'LEBAR_WM_TB' | head -n 1)
 # Set window type to dock
 xprop -id $WINDOW_ID -f _NET_WM_WINDOW_TYPE 32a -set _NET_WM_WINDOW_TYPE "_NET_WM_WINDOW_TYPE_DOCK"
 
-# Set window to be on all workspaces and above other windows
-xprop -id $WINDOW_ID -f _NET_WM_STATE 32a -set _NET_WM_STATE "_NET_WM_STATE_ABOVE, _NET_WM_STATE_STICKY, _NET_WM_STATE_SKIP_TASKBAR, _NET_WM_STATE_SKIP_PAGER"
-
-xprop -id $WINDOW_ID -f _NET_WM_STATE 32a -set _NET_WM_STATE "_NET_WM_STATE_STICKY, _NET_WM_STATE_ABOVE, _NET_WM_STATE_SKIP_TASKBAR, _NET_WM_STATE_SKIP_PAGER, _NET_WM_STATE_BELOW"
+# Set window to be on all workspaces and below other windows
+xprop -id $WINDOW_ID -f _NET_WM_STATE 32a -set _NET_WM_STATE "_NET_WM_STATE_STICKY, _NET_WM_STATE_SKIP_TASKBAR, _NET_WM_STATE_SKIP_PAGER, _NET_WM_STATE_BELOW"
 
 # Set the window to appear on all workspaces
 wmctrl -ir $WINDOW_ID -b add,sticky
-wmctrl -ir $WINDOW_ID -b add,above
+wmctrl -ir $WINDOW_ID -b add,below
 wmctrl -ir $WINDOW_ID -b add,skip_taskbar
 wmctrl -ir $WINDOW_ID -b add,skip_pager
 
