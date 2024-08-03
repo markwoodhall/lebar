@@ -22,6 +22,7 @@ Lebar is bundled with a default configuration but it can be overridden with a cu
 
 (local blocks (require "blocks.fnl"))
 (local themes (require "themes.fnl"))
+(local lib (require "lib.fnl"))
 
 (set config.refresh-seconds 0.001)
 
@@ -45,113 +46,69 @@ Lebar is bundled with a default configuration but it can be overridden with a cu
 (set config.background-color config.theme.black)
 (set config.foreground-color config.theme.text)
 
-; default configuration for blocks
 (set config.block {})
-(set config.block.defaults {})
-(set config.block.defaults.margin 3)
-(set config.block.defaults.padding-x 3)
-(set config.block.defaults.width 140)
-(set config.block.defaults.height 20)
-(set config.block.defaults.auto-fit true)
-(set config.block.defaults.label "")
-(set config.block.defaults.font "JetBrainsMonoNerdFont-Regular.ttf")
-(set config.block.defaults.font-size 14)
-(set config.block.defaults.radius 6)
-(set config.block.defaults.love-font (love.graphics.newFont config.block.defaults.font config.block.defaults.font-size))
-(set config.block.defaults.background-color config.theme.black)
-(set config.block.defaults.foreground-color config.theme.text)
 
 ; configuration for the separator block
-(set config.block.separator {})
-(set config.block.separator.margin config.block.defaults.margin)
+(set config.block.separator (lib.default-settings config.theme))
 (set config.block.separator.padding-x 2)
-(set config.block.separator.radius config.block.defaults.radius)
-(set config.block.separator.width config.block.defaults.width)
-(set config.block.separator.height config.block.defaults.height)
-(set config.block.separator.font config.block.defaults.font)
-(set config.block.separator.font-size config.block.defaults.font-size)
-(set config.block.separator.love-font (love.graphics.newFont config.block.separator.font config.block.separator.font-size))
 (set config.block.separator.text "|")
-(set config.block.separator.foreground-color config.theme.gray-2)
-(set config.block.separator.background-color config.theme.black)
-(set config.block.separator.auto-fit config.block.defaults.auto-fit)
+(set config.block.separator.foreground-color config.theme.gray-3)
 
 ; configuration for the time block
-(set config.block.time {})
-(set config.block.time.margin config.block.defaults.margin)
-(set config.block.time.padding-x config.block.defaults.padding-x)
-(set config.block.time.width config.block.defaults.width)
-(set config.block.time.height config.block.defaults.height)
-(set config.block.time.radius config.block.defaults.radius)
+(set config.block.time (lib.default-settings config.theme))
 (set config.block.time.format "%%a %%d, %%H:%%M")
-(set config.block.time.label config.block.defaults.label)
-(set config.block.time.font config.block.defaults.font)
-(set config.block.time.font-size config.block.defaults.font-size)
-(set config.block.time.love-font (love.graphics.newFont config.block.time.font config.block.time.font-size))
-(set config.block.time.foreground-color config.theme.text)
-(set config.block.time.background-color config.theme.black)
-(set config.block.time.auto-fit config.block.defaults.auto-fit)
+
+; configuration for the power block
+(set config.block.power (lib.default-settings config.theme))
+(set config.block.power.include-remaining-time true)
+
+; configuration for the shell block
+(set config.block.shell (lib.default-settings config.theme))
+
+; configuration for the memory block
+(set config.block.memory (lib.default-settings config.theme))
+(set config.block.memory.label " MEM ")
+
+; configuration for the dunst block
+(set config.block.dunst (lib.default-settings config.theme))
+(set config.block.dunst.label " ")
 
 ; configuration for the user block
-(set config.block.user {})
-(set config.block.user.width config.block.defaults.width)
-(set config.block.user.height config.block.defaults.height)
-(set config.block.user.margin config.block.defaults.margin)
-(set config.block.user.padding-x config.block.defaults.padding-x)
-(set config.block.user.radius config.block.defaults.radius)
+(set config.block.user (lib.default-settings config.theme))
 (set config.block.user.label " ")
-(set config.block.user.font config.block.defaults.font)
-(set config.block.user.font-size config.block.defaults.font-size)
-(set config.block.user.love-font (love.graphics.newFont config.block.user.font config.block.user.font-size))
-(set config.block.user.foreground-color config.theme.text)
-(set config.block.user.background-color config.theme.gray-2)
-(set config.block.user.auto-fit config.block.defaults.auto-fit)
+(set config.block.user.background-color config.theme.blue)
+(set config.block.user.foreground-color config.theme.black)
 
 ; configuration for the cpu block
-(set config.block.cpu {})
-(set config.block.cpu.width config.block.defaults.width)
-(set config.block.cpu.height config.block.defaults.height)
-(set config.block.cpu.margin config.block.defaults.margin)
-(set config.block.cpu.padding-x config.block.defaults.padding-x)
-(set config.block.cpu.radius config.block.defaults.radius)
+(set config.block.cpu (lib.default-settings config.theme))
 (set config.block.cpu.label " CPU ")
-(set config.block.cpu.font config.block.defaults.font)
-(set config.block.cpu.font-size config.block.defaults.font-size)
-(set config.block.cpu.love-font (love.graphics.newFont config.block.cpu.font config.block.cpu.font-size))
-(set config.block.cpu.foreground-color config.block.defaults.foreground-color)
-(set config.block.cpu.background-color config.block.defaults.background-color)
-(set config.block.cpu.auto-fit config.block.defaults.auto-fit)
 (set config.block.cpu.ok-threshold 50)
 
 ; configuration for the window-title block
-(set config.block.window-title {})
-(set config.block.window-title.width config.block.defaults.width)
-(set config.block.window-title.height config.block.defaults.height)
-(set config.block.window-title.margin config.block.defaults.margin)
-(set config.block.window-title.padding-x config.block.defaults.padding-x)
-(set config.block.window-title.radius config.block.defaults.radius)
+(set config.block.window-title (lib.default-settings config.theme))
+(set config.block.window-title.love-font (love.graphics.newFont "JetBrainsMonoNerdFont-Italic.ttf" 14))
 (set config.block.window-title.label " ")
-(set config.block.window-title.font "JetBrainsMonoNerdFont-Italic.ttf")
-(set config.block.window-title.font-size config.block.defaults.font-size)
-(set config.block.window-title.love-font (love.graphics.newFont config.block.window-title.font config.block.window-title.font-size))
 (set config.block.window-title.foreground-color config.theme.gray-2)
-(set config.block.window-title.background-color config.theme.black)
-(set config.block.window-title.auto-fit config.block.defaults.auto-fit)
+
+; configuration for the i3-workspace block
+(set config.block.i3-workspace (lib.default-settings config.theme))
+
+; configuration for the free-disk-space block
+(set config.block.free-disk-space (lib.default-settings config.theme))
+(set config.block.free-disk-space.label " ")
+
+; configuration for the pacman block
+(set config.block.pacman (lib.default-settings config.theme))
+(set config.block.pacman.label "  ")
+
+; configuration for the i3-binding-state block
+(set config.block.i3-binding-state (lib.default-settings config.theme))
+(set config.block.i3-binding-state.label " ")
 
 ; configuration for the wmctrl block
-(set config.block.wmctrl {})
-(set config.block.wmctrl.width config.block.defaults.width)
-(set config.block.wmctrl.height config.block.defaults.height)
-(set config.block.wmctrl.margin (+ config.block.defaults.margin 1))
-(set config.block.wmctrl.padding-x config.block.defaults.padding-x)
+(set config.block.wmctrl (lib.default-settings config.theme))
+(set config.block.wmctrl.margin (+ config.block.wmctrl.margin 1))
 (set config.block.wmctrl.radius 4)
-(set config.block.wmctrl.label config.block.defaults.label)
-(set config.block.wmctrl.font config.block.defaults.font)
-(set config.block.wmctrl.font-size config.block.defaults.font-size)
-(set config.block.wmctrl.love-font (love.graphics.newFont config.block.wmctrl.font config.block.wmctrl.font-size))
-(set config.block.wmctrl.foreground-color config.theme.black)
-(set config.block.wmctrl.background-color config.theme.green)
-(set config.block.wmctrl.auto-fit config.block.defaults.auto-fit)
 
 (set config.all-blocks 
      {:left 
@@ -162,8 +119,11 @@ Lebar is bundled with a default configuration but it can be overridden with a cu
       :right 
       [blocks.time 
        blocks.separator
-       blocks.cpu
-       blocks.separator]})
+       blocks.power
+       blocks.separator
+       blocks.memory
+       blocks.separator
+       blocks.cpu]})
 
 (set config.minimal-blocks 
      {:left 
@@ -172,8 +132,6 @@ Lebar is bundled with a default configuration but it can be overridden with a cu
       :right 
       [blocks.time 
        blocks.separator]})
-
-config
 
 #+end_src
 
