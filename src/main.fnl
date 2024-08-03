@@ -3,7 +3,7 @@
 (local fennel (require "fennel"))
 
 (var bar {})
-(var minimal-mode false)
+(var config {})
 
 (fn love.run []
   (when love.load (love.load (love.arg.parseGameArguments arg) arg))
@@ -26,27 +26,21 @@
     (when love.timer (love.timer.sleep 0.001))))	
 
 (fn get-config []
-  (if minimal-mode
-    (let [conf (require "config.fnl")]
-      (set conf.blocks conf.minimal-blocks)
-      conf)
-    (let [user-config (love.filesystem.read "rc.fnl")
-          conf (if user-config
-                 (fennel.eval user-config)
-                 (require "config.fnl"))]
-      (set conf.blocks conf.all-blocks)
-      conf)))
+  (let [user-config (love.filesystem.read "rc.fnl")
+        conf (if user-config
+               (fennel.eval user-config)
+               (require "config.fnl"))]
+    conf))
 
 (fn love.load []
-  (let [config (get-config)]
-    (love.window.setDisplaySleepEnabled true) 
-    (love.graphics.setFont (love.graphics.newFont config.font config.font-size))
-    (set bar (window.place-window config.window))
-    (set bar (renderer.load-bar bar config))))
+  (set config (get-config))
+  (love.window.setDisplaySleepEnabled true) 
+  (love.graphics.setFont (love.graphics.newFont config.font config.font-size))
+  (set bar (window.place-window config.window))
+  (set bar (renderer.load-bar bar config)))
 
 (fn love.draw []
-  (let [config (get-config)
-        bg config.background-color
+  (let [bg config.background-color
         fg config.foreground-color
         channel (love.thread.getChannel "draw")]
     (love.graphics.clear bg)
@@ -66,12 +60,9 @@
   (print "Thread error!\n" errorstr)
   (print (thread:getError)))
 
-(fn set-minimal-mode []
-  (set minimal-mode (not minimal-mode)))
-
 (fn love.keypressed [_key]
   (case _key
-    "m" (set-minimal-mode) 
+    "r" (set config (get-config))
     "escape" (love.event.quit))
   (let [dr (love.thread.getChannel "draw")]
     (dr:push true)))
