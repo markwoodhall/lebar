@@ -62,7 +62,7 @@
 
 (fn love.keypressed [_key]
   (case _key
-    "r" (set config (get-config))
+    "r" (do (os.execute "/opt/lebar/lebardock &") (love.event.quit))
     "escape" (love.event.quit))
   (let [dr (love.thread.getChannel "draw")]
     (dr:push true)))
