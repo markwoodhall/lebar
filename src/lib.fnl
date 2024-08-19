@@ -16,6 +16,8 @@
        (set block.love-font (love.graphics.newFont block.font block.font-size))
        (set block.background-color theme.black)
        (set block.foreground-color theme.text)
+       (set block.border-color theme.black)
+       (set block.border [0 0 0 0])
        block))
 
 lib

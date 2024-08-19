@@ -13,17 +13,29 @@
     height))
 
 (fn print-left [bar block-config renderable-width width height content]
-  (love.graphics.setColor block-config.background-color)
-  (love.graphics.rectangle 
-    "fill" 
-    renderable-width 
-    block-config.margin 
-    (+ block-config.padding-x 
-       block-config.padding-x 
-       width) 
-    (+ (/ block-config.radius 2) height)
-    block-config.radius 
-    block-config.radius)
+  (let [[top right bottom left] block-config.border]
+    (love.graphics.setColor block-config.border-color)
+    (love.graphics.rectangle 
+      "fill" 
+      renderable-width 
+      block-config.margin 
+      (+ block-config.padding-x 
+         block-config.padding-x 
+         width left right) 
+      (+ (/ block-config.radius 2) height top)
+      0
+      0)
+    (love.graphics.setColor block-config.background-color)
+    (love.graphics.rectangle 
+      "fill" 
+      (+ renderable-width left) 
+      (+ block-config.margin top ) 
+      (- (+ block-config.padding-x 
+            block-config.padding-x 
+            width) left right) 
+      (- (+ (/ block-config.radius 2) height) bottom)
+      block-config.radius 
+      block-config.radius))
   (love.graphics.setColor block-config.foreground-color)
   (love.graphics.print 
     content
@@ -36,19 +48,33 @@
              width))))
 
 (fn print-right [bar block-config renderable-width width height content]
-  (love.graphics.setColor block-config.background-color)
-  (love.graphics.rectangle 
-    "fill" 
-    (- renderable-width 
-       width 
-       block-config.padding-x) 
-    block-config.margin 
-    (+ block-config.padding-x 
-       block-config.padding-x 
-       width) 
-    (+ (/ block-config.radius 2) height)
-    block-config.radius
-    block-config.radius)
+  (let [[top right bottom left] block-config.border]
+    (love.graphics.setColor block-config.border-color)
+    (love.graphics.rectangle 
+      "fill" 
+      (- renderable-width 
+         width 
+         block-config.padding-x)
+      block-config.margin 
+      (+ block-config.padding-x 
+         block-config.padding-x 
+         width left right) 
+      (+ (/ block-config.radius 2) height top)
+      0
+      0)
+    (love.graphics.setColor block-config.background-color)
+    (love.graphics.rectangle 
+      "fill" 
+      (+ (- renderable-width 
+         width 
+         block-config.padding-x) left) 
+      (+ block-config.margin top) 
+      (+ block-config.padding-x 
+         block-config.padding-x 
+         width) 
+      (- (+ (/ block-config.radius 2) height) bottom)
+      block-config.radius
+      block-config.radius))
   (love.graphics.setColor block-config.foreground-color)
   (love.graphics.print 
     content
@@ -143,13 +169,15 @@
                 (let [focused (. i :focused)]
                   (if focused
                     (do
-                      (set block-config.foreground-color config.theme.black)
-                      (set block-config.background-color config.theme.green))
+                      (set block-config.foreground-color config.theme.gray)
+                      (set block-config.background-color config.theme.black)
+                      (set block-config.border-color config.theme.green))
                     (do
-                      (set block-config.foreground-color config.theme.black)
-                      (set block-config.background-color config.theme.gray)))))]
-          (set block-config.foreground-color config.theme.black)
-          (set block-config.background-color config.theme.green)
+                      (set block-config.foreground-color config.theme.gray)
+                      (set block-config.background-color config.theme.black)
+                      (set block-config.border-color config.theme.black)))))]
+          (set block-config.foreground-color config.theme.gray)
+          (set block-config.background-color config.theme.black)
           (if (channel:peek)
             (let [ws (channel:pop)
                   workspaces (icollect [v (ws:gmatch "[^,]+")]
