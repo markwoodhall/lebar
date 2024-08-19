@@ -22,18 +22,18 @@
       (+ block-config.padding-x 
          block-config.padding-x 
          width left right) 
-      (+ (/ block-config.radius 2) height top)
+      (+ (/ block-config.radius 2) height top bottom)
       0
       0)
     (love.graphics.setColor block-config.background-color)
     (love.graphics.rectangle 
       "fill" 
       (+ renderable-width left) 
-      (+ block-config.margin top ) 
+      (+ block-config.margin top) 
       (- (+ block-config.padding-x 
             block-config.padding-x 
             width) left right) 
-      (- (+ (/ block-config.radius 2) height) bottom)
+      (+ (/ block-config.radius 2) height)
       block-config.radius 
       block-config.radius))
   (love.graphics.setColor block-config.foreground-color)
@@ -59,7 +59,7 @@
       (+ block-config.padding-x 
          block-config.padding-x 
          width left right) 
-      (+ (/ block-config.radius 2) height top)
+      (+ (/ block-config.radius 2) height top bottom)
       0
       0)
     (love.graphics.setColor block-config.background-color)
@@ -72,7 +72,7 @@
       (+ block-config.padding-x 
          block-config.padding-x 
          width) 
-      (- (+ (/ block-config.radius 2) height) bottom)
+      (+ (/ block-config.radius 2) height)
       block-config.radius
       block-config.radius))
   (love.graphics.setColor block-config.foreground-color)
