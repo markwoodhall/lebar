@@ -1,5 +1,3 @@
-(local blocks {})
-
 (fn text-to-width [block-config text]
   "Given some text to be rendered, try to calculate an appropriate width for the block"
   (let [font block-config.love-font
@@ -96,26 +94,42 @@
     (love.graphics.setFont block-config.love-font)
     bar))
 
-(set blocks.separator
-     (fn [bar direction config]
-       (let [block-config config.block.separator
-             content block-config.text
-             width (if block-config.auto-fit
-                     (text-to-width block-config content)
-                     block-config.width)
-             height (if block-config.auto-fit
-                      (text-to-height block-config content)
-                      block-config.height)]
-         (bar-print bar content width height direction block-config))))
+(fn thread-shell-command [command]
+  (: (love.thread.newThread (tostring command)) :start))
+
+(fn separator [bar direction config]
+  (let [block-config config.block.separator
+        content block-config.text
+        width (if block-config.auto-fit
+                  (text-to-width block-config content)
+                  block-config.width)
+        height (if block-config.auto-fit
+                   (text-to-height block-config content)
+                   block-config.height)]
+    (bar-print bar content width height direction block-config)))
+
+(fn expand-bar [col bar direction block-config content-fn config-fn config]
+  (accumulate [b bar
+               _ n (ipairs col)]
+    (let [content (content-fn n)
+          width (if block-config.auto-fit
+                  (text-to-width block-config content)
+                  block-config.width)
+          height (if block-config.auto-fit
+                   (text-to-height block-config content)
+                   block-config.height)]
+      (config-fn n block-config)
+      (let [new-bar (bar-print b content width height direction block-config)]
+        (separator new-bar direction config)))))
 
 (var blocks-state-time {})
-(set blocks.time
+(local time
      {:load
       (fn [bar _direction config]
         (local time (love.filesystem.read "time.fnl"))
         (local (parsed _) (string.gsub time "blocks.config.block.time.format" config.block.time.format))
         (local luas (fennel.compile-string parsed))
-        (blocks.thread-shell-command luas)
+        (thread-shell-command luas)
         bar)
       :draw 
       (fn [bar direction config]
@@ -137,27 +151,13 @@
               (bar-print bar blocks-state-time.content blocks-state-time.width blocks-state-time.height direction block-config)
               bar))))})
 
-(fn expand-bar [col bar direction block-config content-fn config-fn config]
-  (accumulate [b bar
-               _ n (ipairs col)]
-    (let [content (content-fn n)
-          width (if block-config.auto-fit
-                  (text-to-width block-config content)
-                  block-config.width)
-          height (if block-config.auto-fit
-                   (text-to-height block-config content)
-                   block-config.height)]
-      (config-fn n block-config)
-      (let [new-bar (bar-print b content width height direction block-config)]
-        (blocks.separator new-bar direction config)))))
-
 (var blocks-state-wmctrl {})
-(set blocks.wmctrl
+(local wmctrl
      {:load
       (fn [bar _direction _config]
         (local i3 (love.filesystem.read "wmctrl.fnl"))
         (local luas (fennel.compile-string i3))
-        (blocks.thread-shell-command luas)
+        (thread-shell-command luas)
         bar)
       :draw 
       (fn [bar direction config]
@@ -191,12 +191,12 @@
               bar))))})
 
 (var blocks-state-i3-workspace {})
-(set blocks.i3-workspace
+(local i3-workspace
      {:load
       (fn [bar _direction _config]
         (local i3 (love.filesystem.read "i3.fnl"))
         (local luas (fennel.compile-string i3))
-        (blocks.thread-shell-command luas)
+        (thread-shell-command luas)
         bar)
       :draw 
       (fn [bar direction config]
@@ -228,7 +228,7 @@
               bar))))})
 
 (var blocks-state-i3-binding-state {})
-(set blocks.i3-binding-state
+(local i3-binding-state
      {:load
       (fn [bar _direction config]
         (set config.block.i3-binding-state.og-background-color config.block.i3-binding-state.background-color)
@@ -271,12 +271,12 @@
                 bar)))))})
 
 (var blocks-state-dunst {})
-(set blocks.dunst
+(local dunst
      {:load
       (fn [bar _direction _config]
         (local dunst (love.filesystem.read "dunst.fnl"))
         (local luas (fennel.compile-string dunst))
-        (blocks.thread-shell-command luas)
+        (thread-shell-command luas)
         bar)
       :draw 
       (fn [bar direction config]
@@ -301,12 +301,12 @@
               bar))))})
 
 (var blocks-state-memory {})
-(set blocks.memory
+(local memory
      {:load
       (fn [bar _direction _config]
         (local memory (love.filesystem.read "memory.fnl"))
         (local luas (fennel.compile-string memory))
-        (blocks.thread-shell-command luas)
+        (thread-shell-command luas)
         bar)
       :draw 
       (fn [bar direction config]
@@ -330,12 +330,12 @@
               bar))))})
 
 (var blocks-state-user {})
-(set blocks.user
+(local user
      {:load
       (fn [bar _direction _config]
         (local user (love.filesystem.read "user.fnl"))
         (local luas (fennel.compile-string user))
-        (blocks.thread-shell-command luas)
+        (thread-shell-command luas)
         bar)
       :draw 
       (fn [bar direction config]
@@ -359,12 +359,12 @@
               bar))))})
 
 (var blocks-state-power {})
-(set blocks.power
+(local power
      {:load
       (fn [bar _direction _config]
         (local power (love.filesystem.read "power.fnl"))
         (local luas (fennel.compile-string power))
-        (blocks.thread-shell-command luas)
+        (thread-shell-command luas)
         bar)
       :draw 
       (fn [bar direction config]
@@ -415,12 +415,12 @@
               bar))))})
 
 (var blocks-state-pacman {})
-(set blocks.pacman
+(local pacman
      {:load
       (fn [bar _direction _config]
         (local pacman (love.filesystem.read "pacman.fnl"))
         (local luas (fennel.compile-string pacman))
-        (blocks.thread-shell-command luas)
+        (thread-shell-command luas)
         bar)
       :draw 
       (fn [bar direction config]
@@ -446,18 +446,13 @@
               (bar-print bar blocks-state-pacman.content blocks-state-pacman.width blocks-state-pacman.height direction block-config)
               bar))))})
 
-(fn thread-shell-command [command]
-  (: (love.thread.newThread (tostring command)) :start))
-
-(set blocks.thread-shell-command thread-shell-command)
-
 (var blocks-state-cpu-last 0)
-(set blocks.cpu
+(local cpu
      {:load
       (fn [bar _direction _config]
         (local cpu (love.filesystem.read "cpu.fnl"))
         (local luas (fennel.compile-string cpu))
-        (blocks.thread-shell-command luas)
+        (thread-shell-command luas)
         bar)
       :draw 
       (fn [bar direction config]
@@ -484,12 +479,12 @@
           (bar-print bar content width height direction block-config)))})
 
 (var blocks-state-window-title {})
-(set blocks.window-title
+(local window-title
      {:load
       (fn [bar _direction _config]
         (local window-title (love.filesystem.read "xwindow.fnl"))
         (local luas (fennel.compile-string window-title))
-        (blocks.thread-shell-command luas)
+        (thread-shell-command luas)
         bar)
       :draw 
       (fn [bar direction config]
@@ -512,16 +507,14 @@
               bar))))})
 
 (var blocks-state-free-disk-space {})
-;; Setting here to supress fennel-ls warning
-(set blocks-state-free-disk-space {})
-(set blocks.free-disk-space
+(local free-disk-space
      {:load
       (fn [mount id bar _direction _config]
         (local free-disk-space (love.filesystem.read "disk.fnl"))
         (local (with-id _) (string.gsub free-disk-space "blocks%.config%.block%.free%-disk%-space%.id" id))
         (local (with-mount _) (string.gsub with-id "blocks%.config%.block%.free%-disk%-space%.mount" mount))
         (local luas (fennel.compile-string with-mount))
-        (blocks.thread-shell-command luas)
+        (thread-shell-command luas)
         (tset blocks-state-free-disk-space id {})
         bar)
       :draw 
@@ -538,11 +531,24 @@
                            (text-to-height block-config content)
                            block-config.height)]
               (when free-disk-space
-                (tset blocks-state-free-disk-space id {:free-disk-space free-disk-space :content content :width width :height height}))
+                (set (. blocks-state-free-disk-space id) {:free-disk-space free-disk-space :content content :width width :height height}))
               (bar-print bar content width height direction block-config))
             (if (. (. blocks-state-free-disk-space id) :content)
               (let [state (. blocks-state-free-disk-space id)]
                 (bar-print bar state.content state.width state.height direction block-config))
               bar))))})
 
-blocks
+{: separator
+ : time
+ : free-disk-space
+ : window-title
+ : cpu
+ : thread-shell-command
+ : wmctrl
+ : i3-workspace
+ : i3-binding-state
+ : dunst
+ : memory
+ : user
+ : pacman
+ : power }
