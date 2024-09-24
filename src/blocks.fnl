@@ -94,7 +94,7 @@
     (love.graphics.setFont block-config.love-font)
     bar))
 
-(fn thread-shell-command [command]
+(fn internal-thread-shell-command [command]
   (: (love.thread.newThread (tostring command)) :start))
 
 (fn separator [bar direction config]
@@ -129,7 +129,7 @@
         (local time (love.filesystem.read "time.fnl"))
         (local (parsed _) (string.gsub time "blocks.config.block.time.format" config.block.time.format))
         (local luas (fennel.compile-string parsed))
-        (thread-shell-command luas)
+        (internal-thread-shell-command luas)
         bar)
       :draw 
       (fn [bar direction config]
@@ -157,7 +157,7 @@
       (fn [bar _direction _config]
         (local i3 (love.filesystem.read "wmctrl.fnl"))
         (local luas (fennel.compile-string i3))
-        (thread-shell-command luas)
+        (internal-thread-shell-command luas)
         bar)
       :draw 
       (fn [bar direction config]
@@ -196,7 +196,7 @@
       (fn [bar _direction _config]
         (local i3 (love.filesystem.read "i3.fnl"))
         (local luas (fennel.compile-string i3))
-        (thread-shell-command luas)
+        (internal-thread-shell-command luas)
         bar)
       :draw 
       (fn [bar direction config]
@@ -276,7 +276,7 @@
       (fn [bar _direction _config]
         (local dunst (love.filesystem.read "dunst.fnl"))
         (local luas (fennel.compile-string dunst))
-        (thread-shell-command luas)
+        (internal-thread-shell-command luas)
         bar)
       :draw 
       (fn [bar direction config]
@@ -306,7 +306,7 @@
       (fn [bar _direction _config]
         (local memory (love.filesystem.read "memory.fnl"))
         (local luas (fennel.compile-string memory))
-        (thread-shell-command luas)
+        (internal-thread-shell-command luas)
         bar)
       :draw 
       (fn [bar direction config]
@@ -335,7 +335,7 @@
       (fn [bar _direction _config]
         (local user (love.filesystem.read "user.fnl"))
         (local luas (fennel.compile-string user))
-        (thread-shell-command luas)
+        (internal-thread-shell-command luas)
         bar)
       :draw 
       (fn [bar direction config]
@@ -364,7 +364,7 @@
       (fn [bar _direction _config]
         (local power (love.filesystem.read "power.fnl"))
         (local luas (fennel.compile-string power))
-        (thread-shell-command luas)
+        (internal-thread-shell-command luas)
         bar)
       :draw 
       (fn [bar direction config]
@@ -420,7 +420,7 @@
       (fn [bar _direction _config]
         (local pacman (love.filesystem.read "pacman.fnl"))
         (local luas (fennel.compile-string pacman))
-        (thread-shell-command luas)
+        (internal-thread-shell-command luas)
         bar)
       :draw 
       (fn [bar direction config]
@@ -452,7 +452,7 @@
       (fn [bar _direction _config]
         (local cpu (love.filesystem.read "cpu.fnl"))
         (local luas (fennel.compile-string cpu))
-        (thread-shell-command luas)
+        (internal-thread-shell-command luas)
         bar)
       :draw 
       (fn [bar direction config]
@@ -484,7 +484,7 @@
       (fn [bar _direction _config]
         (local window-title (love.filesystem.read "xwindow.fnl"))
         (local luas (fennel.compile-string window-title))
-        (thread-shell-command luas)
+        (internal-thread-shell-command luas)
         bar)
       :draw 
       (fn [bar direction config]
@@ -506,7 +506,7 @@
               (bar-print bar blocks-state-window-title.content blocks-state-window-title.width blocks-state-window-title.height direction block-config)
               bar))))})
 
-(var blocks-state-free-disk-space {})
+(local blocks-state-free-disk-space {})
 (local free-disk-space
      {:load
       (fn [mount id bar _direction _config]
@@ -514,7 +514,7 @@
         (local (with-id _) (string.gsub free-disk-space "blocks%.config%.block%.free%-disk%-space%.id" id))
         (local (with-mount _) (string.gsub with-id "blocks%.config%.block%.free%-disk%-space%.mount" mount))
         (local luas (fennel.compile-string with-mount))
-        (thread-shell-command luas)
+        (internal-thread-shell-command luas)
         (tset blocks-state-free-disk-space id {})
         bar)
       :draw 
@@ -543,7 +543,6 @@
  : free-disk-space
  : window-title
  : cpu
- : thread-shell-command
  : wmctrl
  : i3-workspace
  : i3-binding-state
