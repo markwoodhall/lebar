@@ -68,5 +68,9 @@ install:
 	@mkdir -p $(INSTALL_DIR)
 	@cp -r $(BUILD_DIR)/* $(INSTALL_DIR)
 
+run:
+	@echo "Running.."
+	@love src/.
+
 # Phony targets
 .PHONY: all clean install
