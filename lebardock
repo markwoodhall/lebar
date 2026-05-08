@@ -24,7 +24,7 @@ xprop -id $WINDOW_ID -f _NET_WM_DESKTOP 32c -set _NET_WM_DESKTOP "-1"
 # Set reserved space (modify values as needed)
 LEFT=0
 RIGHT=0
-TOP=27
+TOP=34
 BOTTOM=0 
 TOP_END_X=$(xdpyinfo | awk '/dimensions:/ {print $2}' | cut -d 'x' -f 1)
 
