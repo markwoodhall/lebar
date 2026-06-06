@@ -7,6 +7,8 @@ SRC_DIR = src
 BUILD_DIR = build
 INSTALL_DIR = /opt/lebar/
 
+SRC_FILES = $(wildcard $(SRC_DIR)/*)
+
 # .love file and shell script
 LOVE_FILE = $(BUILD_DIR)/$(PROJECT_NAME).love
 SCRIPT_FILE = $(BUILD_DIR)/lebar
@@ -20,7 +22,7 @@ LEBARDOCK = lebardock
 all: $(LOVE_FILE) $(LOVE_EXECUTABLE) $(SCRIPT_FILE) $(LEBARDOCK)
 
 # Create the .love file
-$(LOVE_FILE):
+$(LOVE_FILE): $(SRC_FILES)
 	@echo "Creating $(LOVE_FILE)..."
 	@mkdir -p $(BUILD_DIR)
 	@zip -r -j $(LOVE_FILE) $(SRC_DIR)
@@ -73,4 +75,4 @@ run:
 	@love src/.
 
 # Phony targets
-.PHONY: all clean install
+.PHONY: all clean install run
