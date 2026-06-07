@@ -36,7 +36,7 @@
 
 ; configuration for the time block
 (set config.block.time (lib.default-settings config.theme))
-(set config.block.time.format "%%a %%d, %%H:%%M")
+(set config.block.time.format "%%a %%d, %%H:%%M:%%S")
 
 ; configuration for the power block
 (set config.block.power (lib.default-settings config.theme))
