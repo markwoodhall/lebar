@@ -5,7 +5,7 @@ VERSION = 0.1
 # Source and output directories
 SRC_DIR = src
 BUILD_DIR = build
-INSTALL_DIR = /opt/lebar/
+INSTALL_DIR = ~/.local/bin
 
 SRC_FILES = $(wildcard $(SRC_DIR)/*)
 
@@ -65,7 +65,7 @@ clean:
 	@rm -rf $(BUILD_DIR)
 
 # Install target
-install:
+install: all
 	@echo "Installing.."
 	@mkdir -p $(INSTALL_DIR)
 	@cp -r $(BUILD_DIR)/* $(INSTALL_DIR)
